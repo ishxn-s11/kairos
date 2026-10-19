@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "notes": "Drop real project images into assets/img and reference them here. Any stage with images uses them in its card and slides; a stage with no images (or a 404) falls back to the generative canvas art automatically. 'cover' fills the card; 'contain' letterboxes (good for receipts/documents).",
+  "fit": "cover",
+  "stages": {
+    "01": {
+      "label": "Ingest & Evidence",
+      "card": "assets/img/image_02.png",
+      "slides": [
+        { "src": "assets/img/image_01.png", "caption": "PAYSLIP — IDR 4,365,000 · event_253" },
+        { "src": "assets/img/image_02.png", "caption": "RENT RECEIPT — ₹1,00,000 · event_1442" },
+        { "src": "assets/img/image_05.png", "caption": "TELECOM BILL — ₹704.05 · event_1786" },
+        { "src": "assets/img/image_07.png", "caption": "TAX INVOICE — RS 8,528 · event_3231" },
+        { "src": "assets/img/image_11.png", "caption": "HOSPITAL BILL — ₹3,650 · event_6859" },
+        { "src": "assets/img/image_14.png", "caption": "PHARMACY BILL — 4,593.00 · event_9421" }
+      ]
+    },
+    "02": {
+      "label": "Resolution & Conflicts",
+      "card": null,
+      "slides": [
+        { "src": "assets/img/image_04.png", "caption": "ORDER BILL — settled then amended · event_1700" },
+        { "src": "assets/img/image_08.png", "caption": "MERCHANT INVOICE · event_4535" }
+      ]
+    },
+    "03": {
+      "label": "State Reconstruction",
+      "card": null,
+      "slides": [
+        { "src": "assets/img/image_01.png", "caption": "SALARY SLIP — FX-converted income · event_253" },
+        { "src": "assets/img/image_09.png", "caption": "ACCOUNT STATEMENT · event_5170" }
+      ]
+    },
+    "04": {
+      "label": "90-Day Forecast",
+      "card": null,
+      "slides": [
+        { "src": "assets/img/image_03.png", "caption": "UTILITY STATEMENT — recurring debit · event_1545" },
+        { "src": "assets/img/image_10.png", "caption": "PURCHASE RECEIPT · event_6033" }
+      ]
+    },
+    "05": {
+      "label": "Safe Amount & Timing",
+      "card": null,
+      "slides": [
+        { "src": "assets/img/image_12.png", "caption": "TAXI RECEIPT — $33.50 (USD→INR FX) · event_7307" },
+        { "src": "assets/img/image_15.png", "caption": "AIRLINE TICKET — ₹9,968 · event_9806" }
+      ]
+    },
+    "06": {
+      "label": "Plans & Verifier",
+      "card": null,
+      "slides": [
+        { "src": "assets/img/image_06.png", "caption": "SERVICE BILL — installment candidate · event_3051" },
+        { "src": "assets/img/image_13.png", "caption": "ORDER INVOICE — ₹2,298 · event_7941" }
+      ]
+    },
+    "07": {
+      "label": "Output & Audit",
+      "card": null,
+      "slides": [
+        { "src": "assets/img/image_16.png", "caption": "EV CHARGING — ₹393.22 · event_10521" }
+      ]
+    }
+  }
+}

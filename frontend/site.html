@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KAIROS — Buy or Wait?</title>
+<meta name="description" content="KAIROS — a private, local-first AI purchase & cash-flow planning agent. Buy or Wait? — HackerRank Orchestrate September 2026.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/img/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KAIROS">
+<meta property="og:title" content="KAIROS — Buy or Wait?">
+<meta property="og:description" content="A private, local-first AI purchase & cash-flow planning agent.">
+<style>
+/* ============================================================
+   KAIROS — strict studio-size.com rebuild
+   Pure black/white · Neue Haas Grotesk Display (Helvetica Neue
+   as the offline system substitute) · tight leading + tracking ·
+   minimal chrome · giant footer wordmark. No external deps.
+   ============================================================ */
+
+:root {
+  --bg: #000000;
+  --ink: #ffffff;
+  --dim: #b3b3b3;
+  --faint: #7a7a7a;
+  --hair: #242424;
+  --accent: #ffffff;
+  --ok: #b7f0c1;
+  --warn: #f2e2a3;
+  --bad: #f3b4b4;
+  --info: #b9d2f0;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: "Helvetica Neue", "Neue Haas Grotesk Display", Helvetica, Arial, sans-serif;
+  --leading-tight: 0.95;
+  --track-tight: -0.01em;
+  --pad: clamp(20px, 3.3vw, 48px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(16px, 1.35vw, 20px);
+  letter-spacing: var(--track-tight);
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; }
+::selection { background: #fff; color: #000; }
+img, video { display: block; max-width: 100%; }
+
+/* ---------- header ---------- */
+.page-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 22px var(--pad); mix-blend-mode: difference;
+}
+.page-header .brand {
+  justify-self: start; font-weight: 700; font-size: 22px;
+  letter-spacing: -0.03em; color: #fff;
+}
+.page-header .menu { display: flex; gap: 28px; justify-self: center; }
+.page-header .menu a, .page-header .get-in-touch {
+  font-size: 15px; font-weight: 500; color: #fff; opacity: .85;
+  position: relative; transition: opacity .2s;
+}
+.page-header .menu a:hover, .page-header .get-in-touch:hover,
+.page-header .menu a.active { opacity: 1; }
+.page-header .get-in-touch { justify-self: end; }
+.page-header .burger { display: none; justify-self: end; width: 26px; height: 16px; position: relative; }
+.page-header .burger span { position: absolute; left: 0; right: 0; height: 1.5px; background: #fff; }
+.page-header .burger span:first-child { top: 3px; }
+.page-header .burger span:last-child { bottom: 3px; }
+
+.dropdown-menu {
+  position: fixed; inset: 0; z-index: 99; background: #000;
+  display: flex; flex-direction: column; justify-content: center; gap: 8px;
+  padding: 0 var(--pad); opacity: 0; visibility: hidden; transition: opacity .35s;
+}
+.dropdown-menu.open { opacity: 1; visibility: visible; }
+.dropdown-menu a { font-size: clamp(32px, 8vw, 72px); font-weight: 600; letter-spacing: var(--track-tight); line-height: 1.05; }
+
+/* ---------- hero ---------- */
+.hero_title { padding: clamp(120px, 18vh, 220px) var(--pad) clamp(40px, 8vh, 90px); }
+.hero_title .title {
+  font-size: clamp(48px, 10vw, 150px); font-weight: 600;
+  line-height: var(--leading-tight); letter-spacing: var(--track-tight);
+}
+.hero-rotator { display: inline-block; position: relative; min-width: 4ch; }
+.hero-rotator em { font-style: normal; display: inline-block; transition: transform .4s cubic-bezier(.2,.7,.2,1), opacity .4s; }
+.hero-rotator.swap em { transform: translateY(-0.3em); opacity: 0; }
+
+/* ---------- fullscreen video ---------- */
+.fullscreen-video { position: relative; width: 100%; height: 100vh; background: #000; overflow: hidden; }
+.fullscreen-video video, .fullscreen-video img { width: 100%; height: 100%; object-fit: cover; }
+.fullscreen-video::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.35)); pointer-events: none; }
+
+/* ---------- module head (shared) ---------- */
+.module-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: clamp(50px, 8vh, 110px) var(--pad) clamp(24px, 4vh, 46px);
+}
+.module-head h2 { font-size: clamp(22px, 2.6vw, 40px); font-weight: 600; letter-spacing: var(--track-tight); }
+.view-all { font-size: 15px; opacity: .7; border-bottom: 1px solid transparent; transition: opacity .2s, border-color .2s; }
+.view-all:hover { opacity: 1; border-color: #fff; }
+
+/* ---------- featured work slider ---------- */
+.featured_work_slider { overflow: hidden; }
+.work-track {
+  display: flex; gap: clamp(16px, 2vw, 32px);
+  padding: 0 var(--pad) clamp(30px, 5vh, 60px);
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; cursor: grab;
+}
+.work-track::-webkit-scrollbar { display: none; }
+.work-track.dragging { cursor: grabbing; }
+.work-card { flex: 0 0 clamp(280px, 34vw, 520px); scroll-snap-align: start; }
+.work-card .thumb {
+  position: relative; width: 100%; aspect-ratio: 4/3; background: #0a0a0a;
+  overflow: hidden; border: 0;
+}
+.work-card .thumb img, .work-card .thumb canvas { width: 100%; height: 100%; object-fit: cover; }
+.work-card .work-name { margin-top: 16px; font-size: clamp(20px, 1.8vw, 27px); font-weight: 500; letter-spacing: 0.01em; }
+.work-card .work-sub { margin-top: 4px; font-size: 14px; color: var(--dim); }
+.work-card:hover .thumb { opacity: .82; }
+
+/* ---------- simple statement ---------- */
+.simple_text { padding: clamp(70px, 14vh, 180px) var(--pad); }
+.big-title {
+  font-size: clamp(30px, 5.2vw, 84px); font-weight: 600;
+  line-height: 1.02; letter-spacing: var(--track-tight); max-width: 20ch;
+}
+.big-title .italic, .big-title em { font-style: italic; }
+
+/* ---------- rotating words ---------- */
+.rotating_slider { padding: clamp(40px, 8vh, 110px) var(--pad); overflow: hidden; }
+.rotating { height: clamp(52px, 9vw, 140px); position: relative; }
+.rotating span {
+  position: absolute; left: 0; top: 0; white-space: nowrap;
+  font-size: clamp(48px, 9vw, 140px); font-weight: 600;
+  line-height: 1; letter-spacing: var(--track-tight);
+  opacity: 0; transform: translateY(0.4em);
+  transition: opacity .5s cubic-bezier(.2,.7,.2,1), transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.rotating span.in { opacity: 1; transform: translateY(0); }
+.rotating span.out { opacity: 0; transform: translateY(-0.4em); }
+
+/* ---------- services ---------- */
+.services { border-top: 1px solid var(--hair); }
+.service-row {
+  display: grid; grid-template-columns: 60px 1fr auto; gap: 20px; align-items: baseline;
+  padding: clamp(20px, 3vh, 38px) var(--pad); border-bottom: 1px solid var(--hair);
+  transition: padding-left .35s cubic-bezier(.2,.7,.2,1), background .35s;
+}
+.service-row:hover { padding-left: calc(var(--pad) + 20px); background: #0a0a0a; }
+.service-row .n { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--faint); }
+.service-row h3 { font-size: clamp(26px, 4.4vw, 64px); font-weight: 600; line-height: var(--leading-tight); letter-spacing: var(--track-tight); }
+.service-row .d { max-width: 32ch; font-size: 14px; line-height: 1.5; color: var(--dim); text-align: right; }
+@media (max-width: 720px) {
+  .service-row { grid-template-columns: 40px 1fr; }
+  .service-row .d { grid-column: 2; text-align: left; }
+}
+
+/* ---------- open source / free to run ---------- */
+.open_source { padding-bottom: clamp(40px, 7vh, 90px); }
+.os-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hair); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+.os-cell { background: #000; padding: clamp(24px, 3vw, 40px) var(--pad) clamp(28px, 4vw, 52px); display: flex; flex-direction: column; gap: 12px; transition: background .3s; }
+.os-cell:hover { background: #0a0a0a; }
+.os-cell .os-n { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--faint); }
+.os-cell h3 { font-size: clamp(20px, 2vw, 28px); font-weight: 600; line-height: var(--leading-tight); letter-spacing: var(--track-tight); }
+.os-cell p { font-size: 14px; line-height: 1.6; color: var(--dim); }
+@media (max-width: 960px) { .os-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .os-grid { grid-template-columns: 1fr; } }
+
+/* ---------- background video CTA ---------- */
+.background_video_cta_variation { position: relative; height: 90vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.background_video_cta_variation video, .background_video_cta_variation img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+.background_video_cta_variation .cta-inner { position: relative; z-index: 2; text-align: center; padding: 0 var(--pad); }
+.background_video_cta_variation .big-title { max-width: none; }
+.cta-btn {
+  display: inline-block; margin-top: 30px; padding: 15px 30px;
+  border: 1px solid #fff; border-radius: 999px; font-size: 15px;
+  transition: background .25s, color .25s;
+}
+.cta-btn:hover { background: #fff; color: #000; }
+
+/* ---------- footer + wordmark ---------- */
+.page-footer { border-top: 1px solid var(--hair); padding-top: clamp(50px, 8vw, 90px); overflow: hidden; }
+.footer-top { padding: 0 var(--pad); }
+.footer-say { font-size: clamp(22px, 3vw, 40px); font-weight: 600; letter-spacing: var(--track-tight); }
+.footer-say em { font-style: normal; color: var(--faint); }
+.footer-links { display: flex; flex-wrap: wrap; gap: 26px; padding: clamp(30px, 5vw, 60px) var(--pad) 0; font-size: 15px; color: var(--dim); }
+.footer-links a:hover { color: #fff; }
+.wordmark {
+  display: block; width: 100%; text-align: center; white-space: nowrap; user-select: none;
+  font-size: clamp(84px, 22vw, 380px); font-weight: 700; line-height: .8;
+  letter-spacing: -0.04em; color: #fff; margin-top: clamp(24px, 4vw, 50px);
+}
+.footer-legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 24px var(--pad) 32px; border-top: 1px solid var(--hair); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+
+/* ============================================================
+   SHARED — kept for results / test / workflow / stage pages
+   ============================================================ */
+.rail { position: fixed; z-index: 60; font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
+.rail:hover { color: #fff; }
+.loader { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; transition: opacity .7s ease, visibility .7s; }
+.loader.done { opacity: 0; visibility: hidden; }
+.loader .name { font-size: 30px; letter-spacing: .3em; font-weight: 700; display: flex; }
+.loader .name span { opacity: 0; transform: translateY(14px); animation: letterIn .5s forwards; }
+@keyframes letterIn { to { opacity: 1; transform: none; } }
+.loader .bar { width: 180px; height: 1px; background: #222; position: relative; overflow: hidden; }
+.loader .bar i { position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; animation: load 2.2s .3s cubic-bezier(.6,.05,.2,1) forwards; }
+@keyframes load { 40% { transform: scaleX(.55); } 100% { transform: scaleX(1); } }
+.loader .pct { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: .2em; }
+
+.grain { position: fixed; inset: -60px; z-index: 200; pointer-events: none; opacity: .05; mix-blend-mode: screen; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* results / test bench */
+.results, .testbench { max-width: 1280px; margin: 0 auto; padding: clamp(90px, 14vh, 150px) var(--pad) 80px; }
+.res-kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .24em; color: var(--faint); margin-bottom: 16px; }
+.res-title { font-size: clamp(40px, 7vw, 92px); font-weight: 700; line-height: var(--leading-tight); letter-spacing: var(--track-tight); }
+.res-sub { margin-top: 20px; max-width: 640px; color: var(--dim); font-size: 15px; line-height: 1.7; }
+.res-grid { margin-top: 46px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--hair); border: 1px solid var(--hair); }
+.fact { background: #050505; padding: 20px 18px 16px; }
+.fact-n { font-family: var(--mono); font-size: 30px; font-weight: 700; color: #fff; }
+.fact-l { margin-top: 6px; font-size: 11px; letter-spacing: .06em; color: var(--dim); text-transform: uppercase; }
+.res-cols { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.res-block h2 { font-size: 14px; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--hair); padding-bottom: 12px; margin-bottom: 22px; }
+.bar-row { display: grid; grid-template-columns: 168px 1fr 40px; gap: 14px; align-items: center; margin: 13px 0; }
+.bar-k { font-family: var(--mono); font-size: 11.5px; color: var(--dim); }
+.bar-t { height: 8px; background: #141414; position: relative; }
+.bar-t i { position: absolute; left: 0; top: 0; bottom: 0; background: #fff; }
+.bar-v { font-family: var(--mono); font-size: 12px; color: #fff; text-align: right; }
+.ev-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.ev-card { border: 1px solid var(--hair); background: #050505; padding: 10px; transition: border-color .25s, transform .25s; }
+.ev-card:hover { border-color: #4a4a4a; transform: translateY(-3px); }
+.ev-img { background: #fff; aspect-ratio: 4/3; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.ev-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.ev-meta { margin-top: 10px; font-family: var(--mono); font-size: 10.5px; line-height: 1.7; color: var(--dim); }
+.ev-meta b { color: #fff; }
+.checks { columns: 2; column-gap: 60px; padding-left: 20px; }
+.checks li { font-size: 13px; line-height: 2; color: var(--dim); break-inside: avoid; }
+.checks li::marker { color: #fff; }
+
+/* test bench controls */
+.tb-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 18px; }
+.tb-controls input[list], .tb-form input, .tb-form select { background: #0a0a0a; border: 1px solid var(--hair); color: #eee; font: 12px var(--mono); padding: 10px 12px; }
+.tb-controls button, .tb-form button { font: 12px var(--mono); letter-spacing: .1em; color: #ddd; background: none; border: 1px solid #2a2a2a; padding: 10px 14px; }
+.tb-controls button:hover, .tb-form button:hover { border-color: #666; }
+.tb-hint { font: 11px var(--mono); letter-spacing: .12em; color: var(--faint); padding: 18px 0; text-transform: uppercase; }
+.tb-cmp { margin-top: 14px; border-top: 1px dashed var(--hair); padding-top: 12px; font-size: 12px; }
+.tb-cmp li, .tb-checks li { font: 10px/1.6 var(--mono); letter-spacing: .1em; padding: 3px 8px; border: 1px solid var(--hair); display: inline-block; margin: 2px 4px 0 0; }
+.tb-cmp li.pass, .tb-checks li.pass { color: var(--ok); border-color: rgba(183,240,193,.4); }
+.tb-cmp li.fail, .tb-checks li.fail { color: var(--bad); border-color: rgba(243,180,180,.4); }
+.tb-case { background: #0a0a0a; border: 1px solid var(--hair); padding: 12px 14px; margin-bottom: 10px; }
+.tb-badge { font: 10px var(--mono); letter-spacing: .14em; padding: 3px 8px; }
+.tb-badge.pass { color: var(--ok); border: 1px solid rgba(183,240,193,.4); }
+.tb-badge.fail { color: var(--bad); border: 1px solid rgba(243,180,180,.4); }
+
+/* decision explorer */
+.dec-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 10px 0 6px; }
+.dec-chip { font: 10px/1.4 var(--mono); letter-spacing: .1em; color: var(--faint); background: none; border: 1px solid var(--hair); padding: 6px 9px; text-transform: uppercase; }
+.dec-chip.on { color: #fff; border-color: #fff; }
+.dec-q { margin-left: auto; background: none; border: 1px solid var(--hair); color: #eee; font: 11px var(--mono); padding: 7px 10px; width: 200px; }
+.dec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.dec-card { text-align: left; background: #0a0a0a; border: 1px solid var(--hair); color: #ddd; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.dec-card:hover { border-color: #4a4a4a; }
+.dec-amt { font-size: 16px; font-weight: 700; }
+.dec-method { font-size: 10px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; }
+.dec-expl { font-size: 11px; line-height: 1.6; color: var(--dim); }
+.dec-status { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--sc, #fff); border: 1px solid color-mix(in srgb, var(--sc, #fff) 45%, transparent); padding: 3px 6px; }
+.dec-plan { width: 100%; border-collapse: collapse; }
+.dec-plan th { font-size: 9px; letter-spacing: .14em; color: var(--faint); text-align: left; border-bottom: 1px solid var(--hair); padding: 5px 8px 5px 0; }
+.dec-plan td { font-size: 12px; color: #ccc; border-bottom: 1px solid #151515; padding: 6px 8px 6px 0; }
+
+/* workflow canvas page */
+.wf-panel { position: absolute; right: 30px; top: 90px; bottom: 40px; width: 280px; display: flex; flex-direction: column; gap: 12px; z-index: 6; border-left: 1px solid var(--hair); padding: 18px 0 18px 20px; }
+.wf-title { font-size: clamp(18px, 2vw, 26px); font-weight: 700; }
+.wf-blurb { font-size: 12.5px; line-height: 1.7; color: var(--dim); flex: 1; overflow: auto; }
+.wf-controls button, .wf-dots button { font: 10px var(--mono); letter-spacing: .1em; color: #ddd; background: none; border: 1px solid var(--hair); padding: 7px 10px; }
+.wf-controls button:hover { border-color: #666; }
+.wf-dots button.on { color: #fff; border-color: #fff; }
+
+/* stage / work detail */
+.work-detail { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; padding: 100px var(--pad) 30px; }
+.wd-title { font-size: clamp(28px, 3vw, 40px); letter-spacing: var(--track-tight); font-weight: 700; line-height: 1.04; }
+.wd-desc { width: 340px; font-size: 13px; line-height: 1.8; color: var(--dim); }
+.slide .frame { position: relative; width: min(1200px, 74vw); aspect-ratio: 16/9.4; background: #0a0a0a; border: 1px solid var(--hair); overflow: hidden; }
+.slide .frame svg, .slide .frame canvas { width: 100%; height: 100%; }
+.cnav { position: fixed; z-index: 40; top: 50%; transform: translateY(-50%); font-size: 28px; padding: 20px; opacity: .8; }
+.cnav:hover { opacity: 1; }
+.cnav.prev { left: 20px; } .cnav.next { right: 20px; }
+.lightbox { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.94); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+.lb-inner img { max-width: 80vw; max-height: 84vh; background: #fff; padding: 12px; }
+
+/* live engine pill */
+.tb-live-state { font: 10px var(--mono); letter-spacing: .12em; padding: 3px 9px; border: 1px solid #3a3a3a; border-radius: 999px; color: #8a8a8a; }
+.tb-live-state[data-state="online"] { color: var(--ok); border-color: rgba(183,240,193,.45); }
+.tb-live-state[data-state="offline"] { color: var(--bad); border-color: rgba(243,180,180,.45); }
+
+@media (max-width: 860px) {
+  .page-header { grid-template-columns: 1fr auto; }
+  .page-header .menu, .page-header .get-in-touch { display: none; }
+  .page-header .burger { display: block; }
+  .res-grid { grid-template-columns: repeat(3, 1fr); }
+  .res-cols { grid-template-columns: 1fr; }
+  .ev-grid { grid-template-columns: repeat(2, 1fr); }
+  .checks { columns: 1; }
+}
+
+/* ============================================================
+   COMPATIBILITY — the other pages (results / test / workflow /
+   work stages) still use the legacy .chrome header + workflow
+   classes. Restyled in the studio-size register so they keep a
+   working nav without reintroducing the old look.
+   ============================================================ */
+.chrome {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 22px var(--pad); mix-blend-mode: difference;
+}
+.chrome .brand { justify-self: start; font-weight: 700; font-size: 22px; letter-spacing: -0.03em; color: #fff; }
+.chrome .brand .dot { color: #fff; }
+.chrome nav { display: flex; gap: 26px; justify-self: center; }
+.chrome nav a, .chrome .right a, .chrome .right button { font-size: 15px; font-weight: 500; color: #fff; opacity: .85; transition: opacity .2s; }
+.chrome nav a:hover, .chrome nav a.active, .chrome .right a:hover { opacity: 1; }
+.chrome .right { justify-self: end; display: flex; align-items: center; gap: 22px; }
+.chrome .lang { font-size: 13px; color: var(--faint); margin-left: 8px; }
+.chrome .uline { position: relative; }
+.chrome .uline::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: #fff; transform: scaleX(0); transform-origin: left; transition: transform .3s cubic-bezier(.2,.7,.2,1); }
+.chrome .uline:hover::after, .chrome .uline.active::after { transform: scaleX(1); }
+.eq { display: inline-flex; gap: 2px; margin-left: 6px; }
+.eq i { width: 2px; height: 8px; background: #fff; }
+
+/* side rails + stage counter (workflow / stage pages) */
+.rail.tl2 { top: 96px; right: var(--pad); }
+.rail.ml { top: 50%; left: var(--pad); transform: translateY(-50%); }
+.rail.mr { top: 50%; right: var(--pad); transform: translateY(-50%); }
+.sel-count { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; color: var(--dim); }
+.sel-count b { color: #fff; }
+.sel-count i { font-style: normal; color: var(--faint); margin: 0 6px; }
+
+/* workflow page */
+body[data-page="workflow"] { overflow: hidden; }
+.wf-wrap { position: absolute; inset: 0; }
+#flowCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.wf-panel {
+  position: absolute; top: 84px; right: 30px; width: 300px; max-width: 38vw;
+  max-height: calc(100vh - 120px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 14px; z-index: 6;
+  border-left: 1px solid var(--hair); padding: 4px 0 4px 22px;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.72) 22%);
+}
+.wf-panel::-webkit-scrollbar { width: 0; }
+.wf-kicker { font-size: 11px; letter-spacing: .16em; color: var(--faint); text-transform: uppercase; }
+.wf-title { font-size: clamp(20px, 2vw, 28px); font-weight: 700; line-height: 1.02; letter-spacing: var(--track-tight); }
+.wf-blurb { font-size: 13px; line-height: 1.65; color: var(--dim); }
+.wf-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.wf-controls button { font: 11px var(--mono); letter-spacing: .1em; color: #ddd; background: none; border: 1px solid var(--hair); padding: 8px 12px; }
+.wf-controls button:hover { border-color: #666; }
+.wf-controls button.on { color: #fff; border-color: #fff; }
+.wf-legend { font-size: 10px; letter-spacing: .12em; color: var(--faint); line-height: 2; }
+.wf-modes { margin-left: auto; display: flex; gap: 6px; }
+.wf-dots { display: flex; flex-wrap: wrap; gap: 6px; }
+.wf-dots button { font: 10px var(--mono); letter-spacing: .08em; color: var(--faint); background: none; border: 1px solid var(--hair); padding: 5px 8px; }
+.wf-dots button:hover { border-color: #555; color: #ddd; }
+.wf-dots button.on { color: #fff; border-color: #fff; }
+.lg { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 6px; }
+.lg-floor { background: var(--bad); }
+.lg-line { background: var(--info); }
+.lg-pulse { background: #fff; }
+.hot { color: #fff; }
+
+/* narrow: dock the panel as a bottom sheet so it never covers the diagram */
+@media (max-width: 760px) {
+  .wf-panel {
+    top: auto; left: 0; right: 0; bottom: 0; width: auto; max-width: none;
+    max-height: 46vh; border-left: 0; border-top: 1px solid var(--hair);
+    padding: 18px var(--pad) calc(18px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, #000 30%);
+  }
+  .wf-legend { display: none; }
+}
+
+/* sound toggle state */
+.sound-on .eq { display: inline-flex; }
+body:not(.sound-on) .eq { display: none; }
+
+/* ============================================================
+   TEST BENCH — interactive, two-tab, low-text
+   ============================================================ */
+body[data-page="test"] { overflow-y: auto; }
+.tb2 { max-width: 1120px; margin: 0 auto; padding: 110px var(--pad) 80px; }
+.tb2-head { margin-bottom: 26px; }
+.tb2-title { font-size: clamp(30px, 5vw, 60px); font-weight: 700; line-height: var(--leading-tight); letter-spacing: var(--track-tight); }
+.tb2-sub { margin-top: 8px; font-size: 15px; color: var(--dim); }
+.tb2-panel { border: 1px solid var(--hair); }
+
+.tb2-tabs { display: flex; border-bottom: 1px solid var(--hair); }
+.tb2-tab { flex: 0 0 auto; padding: 14px 22px; font-size: 14px; font-weight: 500; color: var(--faint); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .2s; }
+.tb2-tab:hover { color: var(--dim); }
+.tb2-tab.on { color: #fff; border-bottom-color: #fff; }
+
+.tb2-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px var(--pad) 4px; }
+.tb2-chip { font: 13px var(--mono); letter-spacing: .04em; color: var(--dim); background: none; border: 1px solid var(--hair); border-radius: 999px; padding: 8px 16px; transition: border-color .2s, color .2s; }
+.tb2-chip:hover { border-color: #555; color: #fff; }
+.tb2-chip.on { color: #000; background: #fff; border-color: #fff; }
+
+.tb2-pane { display: none; padding: 16px var(--pad) var(--pad); }
+.tb2-pane.on { display: block; }
+
+.tb2-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+.tb2-bar input[list] { flex: 1 1 220px; background: #0a0a0a; border: 1px solid var(--hair); color: #eee; font: 14px var(--mono); padding: 12px 14px; }
+.tb2-bar input[list]:focus { outline: none; border-color: #666; }
+.tb2-btn { font: 13px var(--mono); letter-spacing: .08em; color: #ddd; background: none; border: 1px solid #2a2a2a; padding: 12px 18px; transition: border-color .2s, background .2s, color .2s; }
+.tb2-btn:hover { border-color: #666; }
+.tb2-btn.primary { color: #000; background: #fff; border-color: #fff; }
+.tb2-btn.primary:hover { opacity: .88; }
+.tb2-toggle { display: inline-flex; align-items: center; gap: 7px; font: 12px var(--mono); letter-spacing: .06em; color: var(--faint); margin-left: auto; }
+
+/* compact decision card */
+.tb2-card { border: 1px solid var(--hair); padding: 20px; animation: tb2In .35s cubic-bezier(.2,.7,.2,1); }
+@keyframes tb2In { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.tb2-card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; }
+.tb2-card-top b { font-size: 16px; letter-spacing: .02em; }
+.tb2-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hair); border: 1px solid var(--hair); margin-bottom: 16px; }
+.tb2-stat { background: #050505; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.tb2-stat .k { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+.tb2-stat .v { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; word-break: break-word; }
+.tb2-why { margin-top: 4px; }
+.tb2-why summary { cursor: pointer; font: 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); list-style: none; }
+.tb2-why summary::-webkit-details-marker { display: none; }
+.tb2-why summary::before { content: "+ "; }
+.tb2-why[open] summary::before { content: "− "; }
+.tb2-why summary:hover { color: #fff; }
+.tb2-why p { margin-top: 10px; font-size: 14px; line-height: 1.7; color: var(--dim); }
+
+.tb2-cmp { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; padding: 12px 16px; border: 1px solid var(--hair); }
+.tb2-cmp.ok { border-color: rgba(183,240,193,.35); }
+.tb2-cmp.diff { border-color: rgba(243,180,180,.35); }
+.tb2-cmp-h { font-size: 13px; font-weight: 700; }
+.tb2-cmp.ok .tb2-cmp-h { color: var(--ok); }
+.tb2-cmp.diff .tb2-cmp-h { color: var(--bad); }
+.tb2-cmp-list { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.tb2-cmp-list i { font: 11px var(--mono); font-style: normal; padding: 3px 9px; border: 1px solid var(--hair); }
+.tb2-cmp-list i.pass { color: var(--ok); border-color: rgba(183,240,193,.4); }
+.tb2-cmp-list i.fail { color: var(--bad); border-color: rgba(243,180,180,.4); }
+
+.tb2-details { border-top: 1px solid var(--hair); }
+.tb2-details summary { cursor: pointer; padding: 16px var(--pad); font: 13px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); list-style: none; }
+.tb2-details summary::-webkit-details-marker { display: none; }
+.tb2-details summary::before { content: "+ "; }
+.tb2-details[open] summary::before { content: "− "; }
+.tb2-details summary:hover { color: #fff; }
+.tb2-details .tb-form { padding: 0 var(--pad); }
+.tb2-details #cfList { padding: 0 var(--pad) var(--pad); }
+
+@media (max-width: 720px) {
+  .tb2-stats { grid-template-columns: repeat(2, 1fr); }
+  .tb2-toggle { margin-left: 0; }
+}
+
+</style>
+</head>
+<body data-page="home" class="ss-page">
+
+<header class="page-header" id="page-header">
+  <a class="brand" href="index.html" aria-label="KAIROS home">KAIROS</a>
+  <nav class="menu">
+    <a href="index.html" class="active">Index</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="results.html">Results</a>
+    <a href="test.html">Test Bench</a>
+    <a href="about.html">About</a>
+  </nav>
+  <a class="get-in-touch" href="about.html#contact">Get in touch</a>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span></button>
+</header>
+
+<div class="dropdown-menu" id="dropdown">
+  <a href="index.html">Index</a>
+  <a href="workflow.html">Workflow</a>
+  <a href="results.html">Results</a>
+  <a href="test.html">Test Bench</a>
+  <a href="about.html">About</a>
+  <a href="about.html#contact">Get in touch</a>
+</div>
+
+<main class="pages">
+
+  <section class="hero_title">
+    <h1 class="title">Buy or Wait?<br>For <span class="hero-rotator" id="heroRotator"><em>cash&nbsp;flow</em></span></h1>
+  </section>
+
+  <div class="fullscreen-video">
+    <img id="heroMedia" src="assets/img/image_01.png" alt="KAIROS evidence document" />
+  </div>
+
+  <section class="featured_work_slider">
+    <div class="module-head">
+      <h2>Featured Work</h2>
+      <a class="view-all" href="results.html">View All</a>
+    </div>
+    <div class="work-track" id="workTrack"><!-- 7 stages injected by stage.js --></div>
+  </section>
+
+  <section class="simple_text">
+    <h2 class="big-title">When certainty and cash flow collide, the answer is <span class="italic">verifiable</span> — safe, private, and local.</h2>
+  </section>
+
+  <section class="rotating_slider">
+    <div class="rotating" id="rotatingWords">
+      <span>affordable now</span><span>affordable later</span><span>affordable with a plan</span><span>not affordable</span>
+    </div>
+  </section>
+
+  <section class="services_module">
+    <div class="module-head"><h2>Services</h2></div>
+    <div class="services" id="services"><!-- injected by stage.js --></div>
+  </section>
+
+  <section class="open_source" aria-label="Open source and free to run">
+    <div class="module-head"><h2>Open source, open wallet</h2></div>
+    <div class="os-grid">
+      <div class="os-cell">
+        <span class="os-n">01</span>
+        <h3>MIT licensed</h3>
+        <p>Every line, prompt and financial rule is public. Audit the engine before you trust it with a budget.</p>
+      </div>
+      <div class="os-cell">
+        <span class="os-n">02</span>
+        <h3>Zero-cost AI</h3>
+        <p>Open-weight models run on your own machine through Ollama. No API bills, no subscription, no per-question fee.</p>
+      </div>
+      <div class="os-cell">
+        <span class="os-n">03</span>
+        <h3>Runs on a normal laptop</h3>
+        <p>Built for ordinary hardware and ordinary budgets — CPU-friendly models, no GPU required, works offline.</p>
+      </div>
+      <div class="os-cell">
+        <span class="os-n">04</span>
+        <h3>Your money stays yours</h3>
+        <p>Financial data never leaves the device. Privacy that used to belong to the wealthy, available to everyone.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="background_video_cta_variation">
+    <img src="assets/img/image_02.png" alt="" />
+    <div class="cta-inner">
+      <h2 class="big-title">Run your own <span>decision</span></h2>
+      <a class="cta-btn" href="test.html">Open the test bench</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="page-footer" id="page-footer">
+  <div class="footer-top">
+    <span class="footer-say">Buy or wait? <em>Now you'll know.</em></span>
+  </div>
+  <nav class="footer-links">
+    <a href="workflow.html">Workflow</a>
+    <a href="results.html">Results</a>
+    <a href="test.html">Test Bench</a>
+    <a href="about.html">About</a>
+  </nav>
+  <div class="wordmark" aria-hidden="true">KAIROS</div>
+  <div class="footer-legal">
+    <span>Small is beautiful.</span>
+    <span>MIT open source</span>
+    <span>Local-first · deterministic · private</span>
+    <span>© KAIROS 2026</span>
+  </div>
+</footer>
+
+<script>
+/* Content data for KAIROS — the Buy-or-Wait financial affordability agent.
+   Seven pipeline stages (mirroring code/buy_or_wait) + about sections. */
+window.DATA = (() => {
+  const WORKS = [
+    {
+      id: "01", motif: "scatter",
+      title: "INGEST & EVIDENCE",
+      sub: "250 REQUESTS · 3 LANGUAGES",
+      client: "MESSAGES · IMAGES · PROFILES",
+      year: "2026",
+      meta: "CSV INGEST · VLM OCR · TYPED FACTS",
+      desc:
+        "Every request arrives as messy evidence: multilingual messages, receipt photos, profile CSVs. The ingest layer normalizes rows, runs OCR on 16 evidence images, extracts typed facts from English, Indonesian and Spanish messages, and hash-caches every artifact so nothing is read twice.",
+      tags: ["evidence","ingest","messages","images","multilingual","ocr","cache","hash","profiles","requests","csv","facts","typed","normalize","dedupe","languages","extraction","provenance"],
+      story: [
+        { x: 8, y: 84, label: "requests.csv" },
+        { x: 20, y: 70, label: "messages" },
+        { x: 26, y: 76, label: "images" },
+        { x: 34, y: 56, label: "profiles" },
+        { x: 42, y: 60, label: "fx table" },
+        { x: 50, y: 34, label: "typed facts" },
+        { x: 58, y: 40, label: "hash cache" },
+        { x: 66, y: 26, label: "evidence pool" },
+      ],
+      poster: "EVIDENCE\nBEFORE\nOPINIONS.",
+    },
+    {
+      id: "02", motif: "rings",
+      title: "RESOLUTION & CONFLICTS",
+      sub: "WHAT IS STILL TRUE",
+      client: "AMENDMENTS · LIFECYCLES",
+      year: "2026",
+      meta: "PRECEDENCE · FAILED / CANCELLED · LINKED EVENTS",
+      desc:
+        "Messages amend history: a salary moves, a purchase is cancelled, a duplicate settles. The resolver folds amendments onto base events, retires failed and cancelled transactions, follows linked-event lifecycles, and keeps only what is still true as of the request date.",
+      tags: ["amendment","conflict","resolution","failed","cancelled","linked","lifecycle","duplicate","settled","pending","precedence","retire","fold","truth","as-of","supersede"],
+      story: [
+        { x: 10, y: 80, label: "base events" },
+        { x: 24, y: 64, label: "amendments" },
+        { x: 40, y: 72, label: "conflicts" },
+        { x: 54, y: 44, label: "lifecycles" },
+        { x: 70, y: 50, label: "resolved state" },
+        { x: 86, y: 24, label: "as-of date" },
+      ],
+      poster: "ONLY WHAT\nIS STILL\nTRUE.",
+    },
+    {
+      id: "03", motif: "fan",
+      title: "STATE RECONSTRUCTION",
+      sub: "ONE BALANCE, FOUR CURRENCIES",
+      client: "FX · RECURRING · INCOME",
+      year: "2026",
+      meta: "DATED RATES · SALARY GATE · RECURRENCE",
+      desc:
+        "The ledger reconstructs a single source of truth: current available balance, FX-converted at dated rates, plus recurring flows projected only when evidence confirms them. Unconfirmed income is never counted; unrealized investments are never cash.",
+      tags: ["balance","fx","rates","dated","convert","recurring","salary","confirmed","income","investments","unrealized","ledger","state","truth","projection","currencies"],
+      story: [
+        { x: 10, y: 78, label: "balance" },
+        { x: 26, y: 62, label: "fx rates" },
+        { x: 42, y: 70, label: "recurrence" },
+        { x: 56, y: 42, label: "salary gate" },
+        { x: 72, y: 48, label: "ledger" },
+        { x: 88, y: 22, label: "one state" },
+      ],
+      poster: "UNCONFIRMED\nIS NOT\nINCOME.",
+    },
+    {
+      id: "04", motif: "wave",
+      title: "90-DAY FORECAST",
+      sub: "THE SAFETY HORIZON",
+      client: "DAILY SIMULATION",
+      year: "2026",
+      meta: "MIN BALANCE · ESSENTIALS · PENDING DEBITS",
+      desc:
+        "A day-by-day simulation projects the balance across the 90-day horizon: every debit, every confirmed credit, every reserved pending item. The invariant never bends — the balance must stay above minimum_balance_to_keep on every single day.",
+      tags: ["forecast","horizon","ninety","days","simulate","daily","balance","minimum","invariant","pending","reserved","essentials","salary","projection","safety","floor"],
+      story: [
+        { x: 10, y: 74, label: "day 0" },
+        { x: 28, y: 56, label: "flows" },
+        { x: 46, y: 64, label: "day 45" },
+        { x: 62, y: 38, label: "minimum" },
+        { x: 80, y: 26, label: "day 90" },
+      ],
+      poster: "THE FLOOR\nNEVER\nBREAKS.",
+    },
+    {
+      id: "05", motif: "tree",
+      title: "SAFE AMOUNT & TIMING",
+      sub: "HOW MUCH · HOW SOON",
+      client: "BISECTION + DATE SEARCH",
+      year: "2026",
+      meta: "AMOUNT_SAFE_TO_PAY · EARLIEST SAFE DATE",
+      desc:
+        "With the forecast running, the engine bisects the largest amount payable today that keeps every future day safe, then walks the calendar forward to find the first date the full request clears. Both numbers come from simulation, not guesses.",
+      tags: ["safe","amount","bisection","binary","search","earliest","date","timing","payable","today","full","clears","calendar","walk","simulate","exact"],
+      story: [
+        { x: 10, y: 70, label: "request" },
+        { x: 26, y: 52, label: "bisection" },
+        { x: 40, y: 60, label: "safe amount" },
+        { x: 56, y: 34, label: "date walk" },
+        { x: 72, y: 40, label: "earliest date" },
+        { x: 88, y: 20, label: "verdict" },
+      ],
+      poster: "SIMULATE,\nDON'T\nGUESS.",
+    },
+    {
+      id: "06", motif: "grid",
+      title: "PLANS & VERIFIER",
+      sub: "EVERY LEGAL CANDIDATE",
+      client: "FULL · PARTIAL · INSTALLMENTS",
+      year: "2026",
+      meta: "SPENDING CHANGES · RANKING · EXPLANATION",
+      desc:
+        "The generator proposes every legal strategy — full payment, partial, seller installments, waiting, plus permitted spending changes. An independent verifier simulates each candidate and rejects unsafe plans; the survivor ranks by the official rules and becomes a grounded explanation.",
+      tags: ["plans","candidates","full","partial","installments","waiting","spending","changes","stop","reduce","verifier","reject","rank","official","rules","explanation","grounded"],
+      story: [
+        { x: 10, y: 76, label: "candidates" },
+        { x: 28, y: 58, label: "installments" },
+        { x: 46, y: 66, label: "spending opts" },
+        { x: 62, y: 40, label: "verifier" },
+        { x: 82, y: 24, label: "best plan" },
+      ],
+      poster: "VERIFY,\nTHEN\nRECOMMEND.",
+    },
+    {
+      id: "07", motif: "spiral",
+      title: "OUTPUT & AUDIT",
+      sub: "250 ROWS, EVERY ONE CHECKED",
+      client: "OUTPUT.CSV · VALIDATION",
+      year: "2026",
+      meta: "STATUS MIX · USAGE REPORT · LOG",
+      desc:
+        "The run ends in a 22-point validation: schema, enums, plan syntax, installment fidelity, minimum-balance preservation, explanation agreement. A usage report tracks every model call and token; the chat transcript logs every turn of the build.",
+      tags: ["output","rows","validation","checks","schema","enums","plan","syntax","installment","fidelity","explanation","agreement","usage","tokens","cost","report","transcript","audit"],
+      story: [
+        { x: 10, y: 80, label: "predictions" },
+        { x: 28, y: 64, label: "22 checks" },
+        { x: 48, y: 72, label: "usage report" },
+        { x: 66, y: 44, label: "transcript" },
+        { x: 86, y: 26, label: "submitted" },
+      ],
+      poster: "AUDIT\nEVERY\nROW.",
+    },
+  ];
+
+  const SECTIONS = [
+    { id: "mission", nav: "MISSION", giant: "MISSION",
+      kicker: "ANSWER WITH |EVIDENCE",
+      copy: "Every request asks one question: can this purchase happen now, or should it wait? KAIROS reads the whole financial picture — balance, commitments, income, habits — then simulates ninety days and answers with evidence, never optimism." },
+    { id: "invariants", nav: "INVARIANTS", giant: "INVARIANTS",
+      kicker: "THE FLOOR DOESN'T |BEND",
+      copy: "The projected balance may never fall below minimum_balance_to_keep on any day of the 90-day horizon. Essentials get paid first. Pending debits are reserved before they strike. Unconfirmed income is never counted, and unrealized investments are never treated as cash." },
+    { id: "evidence", nav: "EVIDENCE", giant: "EVIDENCE",
+      kicker: "MESSAGES, RECEIPTS, |RECORDS",
+      copy: "Evidence arrives in three languages and sixteen images: salary confirmations, cancelled payments, telephone bills, handwritten pharmacy receipts. Each artifact is extracted into typed facts with provenance and cached by content hash — the same message is never read twice." },
+    { id: "engine", nav: "ENGINE", giant: "ENGINE",
+      kicker: "DETERMINISTIC TO THE |CORE",
+      copy: "Money arithmetic lives in Python with exact decimals, not in a model's intuition. Currency conversion uses dated FX tables; every candidate plan is verified by an independent simulator before ranking; the LLM never decides affordability — it only reads evidence." },
+    { id: "models", nav: "MODELS", giant: "MODELS",
+      kicker: "AI READS, PYTHON |DECIDES",
+      copy: "A provider-agnostic model layer extracts facts from messages and images through OpenAI, Anthropic or Google endpoints — at temperature zero, validated against strict schemas, with injection-safe prompts and full token accounting. The deterministic engine stays testable with no key at all." },
+    { id: "pipeline", nav: "PIPELINE", giant: "PIPELINE",
+      kicker: "SEVEN STAGES, ONE |RUN",
+      copy: "Ingest, resolve, reconstruct, forecast, size, plan, audit. The index on the home page walks the same path: each card is one stage of the run that turns 250 raw requests into one validated decision table." },
+    { id: "results", nav: "RESULTS", giant: "RESULTS",
+      kicker: "SCORED ON 25 SOLVED |CASES",
+      copy: "The agent evaluates itself against 25 public solved requests before ever touching the full set: safe amounts, statuses, plans, earliest dates — normalized and compared field by field, with every mismatch traced back to a general rule, never a patched ID." },
+    { id: "contact", nav: "CONTACT", giant: "CONTACT",
+      kicker: "QUESTIONS, |ANSWERED",
+      copy: "Questions about the pipeline, the evaluation, or this site? The team behind KAIROS reads every message. Open the repository, run the engine yourself, or write to kairos.agent@gmail.com.",
+      mail: "kairos.agent@gmail.com" },
+  ];
+
+  const CLOUD_EXTRA = [
+    "balance","floor","minimum","horizon","ninety","days","forecast","simulate","evidence",
+    "messages","images","fx","rates","dated","currency","convert","installments","partial",
+    "full","wait","affordable","later","now","plan","rank","verify","reject","audit","rows",
+    "tokens","cost","usage","cache","hash","salary","confirmed","pending","reserved","failed",
+    "cancelled","linked","lifecycle","recurring","essentials","protected","stoppable","reducible",
+    "explanation","grounded","deterministic","decimal","exact","schema","typed","facts",
+    "multilingual","indonesian","spanish","english","ocr","vision","provider","temperature",
+    "zero","injection","safe","guard","evaluation","solved","samples","mismatch","rule",
+    "general","traceability","inventory","deadline","horizon","completion","seller","offer",
+    "financing","fee","schedule","bisection","walk","earliest","verdict","status","method",
+  ];
+
+  return { WORKS, SECTIONS, CLOUD_EXTRA };
+})();
+
+</script>
+<script>
+/* Generated artwork for the seven work cards + diagram slides.
+   Each motif is a function (ctx, w, h, seed) that draws one still frame. */
+window.ART = (() => {
+  const TAU = Math.PI * 2;
+
+  function mulberry(seed) {
+    let t = seed >>> 0;
+    return function () {
+      t += 0x6D2B79F5;
+      let r = Math.imul(t ^ (t >>> 15), 1 | t);
+      r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function bg(ctx, w, h) {
+    ctx.fillStyle = "#050505";
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function dot(ctx, x, y, r, fill, alpha = 1) {
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, TAU);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------- 01: fan / core-axis expansion (green) ---------- */
+  function fan(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    const green = "#b9f36a";
+    const cx = w * 0.38, cy = h * 0.5;
+
+    // left regular grid, hollow dots
+    const lg = 5, lgn = 4, gapL = w * 0.045;
+    for (let i = 0; i < lg; i++) {
+      for (let j = 0; j < lgn; j++) {
+        const x = w * 0.08 + i * gapL, y = cy + (j - (lgn - 1) / 2) * gapL;
+        if (rnd() < .22) dot(ctx, x, y, 2.4, green);
+        else {
+          ctx.strokeStyle = "rgba(110,140,220,.9)";
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.arc(x, y, 3, 0, TAU); ctx.stroke();
+        }
+      }
+    }
+    // curved convergence lines
+    ctx.strokeStyle = "rgba(110,140,220,.55)";
+    ctx.lineWidth = 1;
+    for (let j = 0; j < lgn; j++) {
+      const y0 = cy + (j - (lgn - 1) / 2) * gapL;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.08 + (lg - 1) * gapL, y0);
+      ctx.bezierCurveTo(cx - w * 0.1, y0, cx - w * 0.05, cy, cx, cy);
+      ctx.stroke();
+    }
+    // core blob
+    dot(ctx, cx, cy, w * 0.028, green);
+    // right fan: rows curving up/down, solid green dots growing
+    const rows = 7, cols = 12;
+    for (let r = 0; r < rows; r++) {
+      const t = (r - (rows - 1) / 2) / ((rows - 1) / 2);
+      ctx.strokeStyle = "rgba(110,140,220,.4)";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.bezierCurveTo(cx + w * .12, cy + t * h * .18, cx + w * .2, cy + t * h * .42, cx + w * .5, cy + t * h * .48);
+      ctx.stroke();
+      for (let c = 1; c <= cols; c++) {
+        const u = c / cols;
+        const x = cx + (w * 0.5) * u * (0.4 + 0.6 * u);
+        const y = cy + t * h * .48 * (u * u * .6 + u * .4);
+        dot(ctx, x, y, 2 + 3.4 * u, green, .55 + .45 * u);
+      }
+    }
+  }
+
+  /* ---------- 02: point cloud rectangle (pension pool) ---------- */
+  function scatter(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    const N = 1500;
+    for (let i = 0; i < N; i++) {
+      const inCore = rnd() < .55;
+      let x, y;
+      if (inCore) {
+        x = w * .18 + rnd() * w * .42;
+        y = h * .22 + rnd() * h * .5;
+      } else {
+        x = rnd() * w; y = rnd() * h;
+      }
+      // carve a word-ish band
+      const band = Math.abs(y - h * .45) < h * .07 && x > w * .3 && x < w * .75;
+      if (band && rnd() < .8) continue;
+      dot(ctx, x, y, rnd() < .9 ? .8 : 1.6, "#cfd4da", .25 + rnd() * .6);
+    }
+    // faint title bar
+    ctx.fillStyle = "rgba(255,255,255,.06)";
+    ctx.fillRect(w * .3, h * .38, w * .45, h * .14);
+  }
+
+  /* ---------- 03: concentric archival rings ---------- */
+  function rings(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    const cx = w * .5, cy = h * .52;
+    for (let r = 14; r < w * .42; r += 13) {
+      const a0 = rnd() * TAU, a1 = a0 + 1.2 + rnd() * 3.6;
+      ctx.strokeStyle = `rgba(200,205,215,${.08 + rnd() * .3})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, a0, a1);
+      ctx.stroke();
+      // tick at arc end
+      const tx = cx + Math.cos(a1) * r, ty = cy + Math.sin(a1) * r;
+      ctx.strokeStyle = "rgba(255,255,255,.5)";
+      ctx.beginPath();
+      ctx.moveTo(tx - 3, ty); ctx.lineTo(tx + 3, ty);
+      ctx.stroke();
+    }
+    for (let i = 0; i < 40; i++) dot(ctx, rnd() * w, rnd() * h, rnd() * 1.2, "#cfd4da", .3);
+  }
+
+  /* ---------- 04: reading tree ---------- */
+  function tree(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    const trunk = [[w * .5, h * .95], [w * .5, h * .6]];
+    ctx.strokeStyle = "rgba(190,200,220,.7)";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(trunk[0][0], trunk[0][1]);
+    ctx.lineTo(trunk[1][0], trunk[1][1]);
+    ctx.stroke();
+
+    const branch = (x, y, ang, len, depth) => {
+      if (depth === 0 || len < 8) return;
+      const n = depth > 2 ? 2 : (rnd() < .7 ? 2 : 1);
+      for (let i = 0; i < n; i++) {
+        const a = ang + (i - (n - 1) / 2) * (.5 + rnd() * .3);
+        const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
+        ctx.strokeStyle = `rgba(190,205,225,${.25 + depth * .12})`;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke();
+        dot(ctx, x2, y2, 1.6 + depth * .4, "#dfe6ff", .8);
+        branch(x2, y2, a, len * (.62 + rnd() * .12), depth - 1);
+      }
+    };
+    branch(trunk[1][0], trunk[1][1], -Math.PI / 2, h * .16, 5);
+  }
+
+  /* ---------- 05: care signal waves ---------- */
+  function wave(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    for (let s = 0; s < 3; s++) {
+      ctx.strokeStyle = `rgba(150,220,180,${.5 - s * .13})`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 3) {
+        const t = x / w;
+        const y = h * (.4 + s * .12)
+          + Math.sin(t * TAU * (1.2 + s * .7) + s * 2) * h * .1
+          + Math.sin(t * TAU * 5.3 + s) * h * .016 * (0.4 + Math.sin(t * 9 + s) ** 2);
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      for (let i = 0; i < 24; i++) {
+        const t = (i + .5) / 24;
+        const x = t * w;
+        const y = h * (.4 + s * .12) + Math.sin(t * TAU * (1.2 + s * .7) + s * 2) * h * .1;
+        dot(ctx, x, y, 1.8, "#cdeedd", .8);
+      }
+    }
+  }
+
+  /* ---------- 06: modular grid skeleton ---------- */
+  function grid(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    ctx.strokeStyle = "rgba(160,170,190,.4)";
+    const cols = 12, rows = 7, cw = w / cols, rh = h / rows;
+    for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo(i * cw, 0); ctx.lineTo(i * cw, h); ctx.stroke(); }
+    for (let j = 0; j <= rows; j++) { ctx.beginPath(); ctx.moveTo(0, j * rh); ctx.lineTo(w, j * rh); ctx.stroke(); }
+    // highlighted modules
+    for (let k = 0; k < 9; k++) {
+      const c = Math.floor(rnd() * cols), r = Math.floor(rnd() * rows);
+      const pw = 1 + Math.floor(rnd() * 3), ph = 1 + Math.floor(rnd() * 2);
+      ctx.fillStyle = `rgba(210,220,240,${.12 + rnd() * .2})`;
+      ctx.fillRect(c * cw + 1, r * rh + 1, pw * cw - 2, ph * rh - 2);
+      if (rnd() < .5) {
+        ctx.strokeStyle = "rgba(255,255,255,.55)";
+        ctx.strokeRect(c * cw + 1, r * rh + 1, pw * cw - 2, ph * rh - 2);
+      }
+    }
+    // baseline numbers
+    ctx.fillStyle = "rgba(255,255,255,.35)";
+    ctx.font = "9px monospace";
+    for (let i = 0; i <= cols; i += 2) ctx.fillText(String(i * 100).padStart(4, "0"), i * cw + 3, h - 4);
+  }
+
+  /* ---------- 07: dotted golden spiral ---------- */
+  function spiral(ctx, w, h, rnd) {
+    bg(ctx, w, h);
+    const cx = w * .5, cy = h * .52;
+    const N = 560;
+    for (let i = 0; i < N; i++) {
+      const t = i / N;
+      const a = t * TAU * 5.2;
+      const r = 6 + Math.pow(t, .82) * w * .34;
+      const x = cx + Math.cos(a) * r;
+      const y = cy + Math.sin(a) * r * .92;
+      dot(ctx, x, y, 1 + t * 2.2, "#e8dcc0", .25 + t * .65);
+    }
+    // radial ticks
+    for (let i = 0; i < 48; i++) {
+      const a = (i / 48) * TAU;
+      const r0 = w * .4, r1 = r0 + 8;
+      ctx.strokeStyle = "rgba(232,220,192,.25)";
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+      ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+      ctx.stroke();
+    }
+  }
+
+  const MOTIFS = { fan, scatter, rings, tree, wave, grid, spiral };
+
+  function paint(canvas, motif, seed = 7) {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const w = canvas.clientWidth || canvas.width, h = canvas.clientHeight || canvas.height;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    (MOTIFS[motif] || fan)(ctx, w, h, mulberry(seed));
+  }
+
+  /* ---------- SVG diagram builders for the work-detail slides ---------- */
+  const NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs = {}) {
+    const n = document.createElementNS(NS, name);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  function svgFan(host, storyLabels) {
+    const svg = el("svg", { viewBox: "0 0 1200 700", preserveAspectRatio: "xMidYMid meet" });
+    svg.appendChild(el("rect", { width: 1200, height: 700, fill: "#070707" }));
+    const cx = 470, cy = 350;
+    // left grid
+    for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) {
+      const x = 130 + i * 60, y = 230 + j * 60;
+      if ((i + j) % 3 === 0) svg.appendChild(el("circle", { cx: x, cy: y, r: 4, fill: "#b9f36a" }));
+      else svg.appendChild(el("circle", { cx: x, cy: y, r: 4, fill: "none", stroke: "#6e8cdc", "stroke-width": 1.4 }));
+    }
+    // curves to core
+    for (let j = 0; j < 5; j++) {
+      const y = 230 + j * 60;
+      const p = el("path", { d: `M 370 ${y} C 440 ${y}, 440 ${cy}, ${cx} ${cy}`, stroke: "#6e8cdc", fill: "none", "stroke-width": 1.2, opacity: .7 });
+      svg.appendChild(p);
+    }
+    svg.appendChild(el("circle", { cx, cy, r: 34, fill: "#b9f36a" }));
+    // fan right
+    for (let r = 0; r < 7; r++) {
+      const t = (r - 3) / 3;
+      const ex = 1100, ey = cy + t * 300;
+      svg.appendChild(el("path", { d: `M ${cx} ${cy} C ${cx + 160} ${cy + t * 90}, ${cx + 300} ${cy + t * 200}, ${ex} ${ey}`, stroke: "#6e8cdc", fill: "none", opacity: .5 }));
+      for (let c = 1; c <= 11; c++) {
+        const u = c / 11;
+        const x = cx + (ex - cx) * u * (.35 + .65 * u);
+        const y = cy + t * 300 * (u * u * .55 + u * .45);
+        svg.appendChild(el("circle", { cx: x, cy: y, r: 3 + 4.6 * u, fill: "#b9f36a", opacity: .5 + .5 * u }));
+      }
+    }
+    // story path with labels
+    const pl = el("polyline", { points: storyLabels.map(s => `${s.x * 12},${s.y * 7}`).join(" "), fill: "none", stroke: "rgba(255,255,255,.55)", "stroke-width": 1 });
+    svg.appendChild(pl);
+    storyLabels.forEach((s, idx) => {
+      const x = s.x * 12, y = s.y * 7;
+      svg.appendChild(el("circle", { cx: x, cy: y, r: 3, fill: "#fff" }));
+      const t = el("text", { x: x + 8, y: y - 6, class: "storylabel", fill: "#bbb" });
+      t.textContent = s.label;
+      t.dataset.idx = idx;
+      svg.appendChild(t);
+    });
+    // captions
+    [["Asset", 200], ["Core axis", 600], ["Expansion", 990]].forEach(([txt, x]) => {
+      const t = el("text", { x, y: 660, fill: "#eee", "font-size": 26, "font-weight": 700 });
+      t.textContent = txt;
+      svg.appendChild(t);
+    });
+    return svg;
+  }
+
+  function svgScatterSlide(host, storyLabels, titleText) {
+    const svg = el("svg", { viewBox: "0 0 1200 700" });
+    svg.appendChild(el("rect", { width: 1200, height: 700, fill: "#070707" }));
+    const rnd = mulberry(99);
+    for (let i = 0; i < 2600; i++) {
+      const x = rnd() * 1200, y = rnd() * 700;
+      const band = y > 250 && y < 420 && x > 300 && x < 900;
+      if (band && rnd() < .85) continue;
+      svg.appendChild(el("circle", { cx: x, cy: y, r: rnd() < .92 ? 1 : 1.9, fill: "#cfd4da", opacity: .15 + rnd() * .5 }));
+    }
+    const t = el("text", { x: 600, y: 355, "text-anchor": "middle", fill: "#eaeaea", "font-size": 30, "letter-spacing": 6, "font-weight": 700 });
+    t.textContent = titleText || "KAIROS";
+    svg.appendChild(t);
+    const path = el("polyline", { points: storyLabels.map(s => `${s.x * 12},${s.y * 7}`).join(" "), fill: "none", stroke: "rgba(255,255,255,.5)" });
+    svg.appendChild(path);
+    storyLabels.forEach(s => {
+      svg.appendChild(el("circle", { cx: s.x * 12, cy: s.y * 7, r: 3, fill: "#fff" }));
+      const lb = el("text", { x: s.x * 12 + 8, y: s.y * 7 - 6, class: "storylabel" });
+      lb.textContent = s.label;
+      svg.appendChild(lb);
+    });
+    return svg;
+  }
+
+  function svgPoster(host, text) {
+    const svg = el("svg", { viewBox: "0 0 1200 700" });
+    svg.appendChild(el("rect", { width: 1200, height: 700, fill: "#0a0a0a" }));
+    svg.appendChild(el("line", { x1: 60, y1: 60, x2: 1140, y2: 60, stroke: "#222" }));
+    svg.appendChild(el("line", { x1: 60, y1: 640, x2: 1140, y2: 640, stroke: "#222" }));
+    text.split("\n").forEach((line, i) => {
+      const t = el("text", { x: 600, y: 300 + i * 74, "text-anchor": "middle", fill: "#f2f2f2", "font-size": 54, "font-weight": 800, "letter-spacing": 2 });
+      t.textContent = line;
+      svg.appendChild(t);
+    });
+    return svg;
+  }
+
+  function svgLaptop(host, motifSeed) {
+    // laptop screen content: mini fan viz
+    const wrap = document.createElement("div");
+    wrap.className = "laptop";
+    const screen = document.createElement("div");
+    screen.className = "screen";
+    const svg = el("svg", { viewBox: "0 0 640 400" });
+    svg.appendChild(el("rect", { width: 640, height: 400, fill: "#04070a" }));
+    const rnd = mulberry(motifSeed);
+    // dashboard: header bar + aurora viz + stat lines
+    svg.appendChild(el("rect", { x: 0, y: 0, width: 640, height: 44, fill: "#0a0f12" }));
+    svg.appendChild(el("text", { x: 20, y: 28, fill: "#dfe8e4", "font-size": 13, "letter-spacing": 2, "font-weight": 700 }));
+    svg.lastChild.textContent = "KAIROS — DECISION CONSOLE";
+    ["#3f7f6f", "#4f9f8f"].forEach((c, ci) => {
+      for (let i = 0; i < 900; i++) {
+        const a = rnd() * TAU, r = 26 + rnd() * 130;
+        const x = 320 + Math.cos(a) * r * 1.35, y = 205 + Math.sin(a) * r * .6;
+        svg.appendChild(el("circle", { cx: x, cy: y, r: rnd() * 1.8, fill: c, opacity: .18 + rnd() * .5 }));
+      }
+    });
+    for (let i = 0; i < 3; i++) {
+      const y = 300 + i * 26;
+      svg.appendChild(el("rect", { x: 60, y, width: 120 + rnd() * 300, height: 5, fill: "#16221e" }));
+      svg.appendChild(el("rect", { x: 60, y, width: 60 + rnd() * 160, height: 5, fill: "#3f7f6f", opacity: .8 }));
+    }
+    screen.appendChild(svg);
+    const base = document.createElement("div");
+    base.className = "base";
+    wrap.append(screen, base);
+    return wrap;
+  }
+
+  window.ART = { paint, MOTIFS, svgFan, svgScatterSlide, svgPoster, svgLaptop, el, mulberry };
+  return window.ART;
+})();
+
+</script>
+<script>
+/* studio-size.com home: hero rotator · featured-work slider · rotating words · services.
+   Stage content comes from the shared DATA (data.js) so the 7 decision stages stay in sync. */
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const WORKS = (window.DATA && window.DATA.WORKS) || [];
+
+  /* ---------- header: burger toggles the dropdown ---------- */
+  const burger = $("#burger"), dropdown = $("#dropdown");
+  if (burger && dropdown) {
+    burger.addEventListener("click", () => dropdown.classList.toggle("open"));
+    dropdown.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => dropdown.classList.remove("open")));
+  }
+
+  /* ---------- hero rotator ---------- */
+  const heroWords = ["cash flow", "the price", "the moment", "installments"];
+  const rot = $("#heroRotator");
+  if (rot) {
+    let hi = 0;
+    const inner = rot.querySelector("em");
+    setInterval(() => {
+      rot.classList.add("swap");
+      setTimeout(() => {
+        hi = (hi + 1) % heroWords.length;
+        inner.innerHTML = heroWords[hi].replace(/ /g, "&nbsp;");
+        rot.classList.remove("swap");
+      }, 400);
+    }, 2600);
+  }
+
+  /* ---------- featured work slider (7 stages) ---------- */
+  const track = $("#workTrack");
+  if (track && WORKS.length) {
+    WORKS.forEach((wk) => {
+      const a = document.createElement("a");
+      a.className = "work-card";
+      a.href = `work/stage-${wk.id}.html`;
+      a.innerHTML = `
+        <div class="thumb"><canvas></canvas></div>
+        <div class="work-name">${wk.title}</div>
+        <div class="work-sub">${wk.sub}</div>`;
+      track.appendChild(a);
+      if (window.ART && window.ART.paint) window.ART.paint(a.querySelector("canvas"), wk.motif, 7 + Number(wk.id) * 13);
+    });
+    /* drag-to-scroll */
+    let down = false, startX = 0, startL = 0;
+    track.addEventListener("pointerdown", (e) => { down = true; startX = e.clientX; startL = track.scrollLeft; track.classList.add("dragging"); });
+    addEventListener("pointerup", () => { down = false; track.classList.remove("dragging"); });
+    track.addEventListener("pointermove", (e) => { if (!down) return; track.scrollLeft = startL - (e.clientX - startX); });
+  }
+
+  /* ---------- rotating words ---------- */
+  const rotWords = $("#rotatingWords");
+  if (rotWords) {
+    const spans = [...rotWords.querySelectorAll("span")];
+    let ri = 0;
+    spans[0].classList.add("in");
+    setInterval(() => {
+      spans[ri].classList.remove("in"); spans[ri].classList.add("out");
+      const prev = ri;
+      ri = (ri + 1) % spans.length;
+      spans[ri].classList.remove("out"); spans[ri].classList.add("in");
+      setTimeout(() => spans[prev].classList.remove("out"), 500);
+    }, 2200);
+  }
+
+  /* ---------- services ---------- */
+  const SERVICES = [
+    ["01", "Affordability", "Can I afford this today without breaking my reserve?"],
+    ["02", "Cash-flow forecast", "A 90-day deterministic simulation of every inflow and outflow."],
+    ["03", "Payment options", "Full, partial, or installments — each re-simulated and verified."],
+    ["04", "Wait or buy", "The earliest date a full payment is safe, if it isn't today."],
+    ["05", "Freelancer mode", "Variable income and pending invoices, never counted as guaranteed."],
+    ["06", "Explainability", "A dated cash-flow table behind every recommendation."],
+  ];
+  const svc = $("#services");
+  if (svc) {
+    SERVICES.forEach(([n, t, d]) => {
+      const row = document.createElement("div");
+      row.className = "service-row";
+      row.innerHTML = `<span class="n">${n}</span><h3>${t}</h3><span class="d">${d}</span>`;
+      svc.appendChild(row);
+    });
+  }
+
+  /* ---------- loader (first visit only) ---------- */
+  if (!sessionStorage.getItem("bow-loaded")) {
+    sessionStorage.setItem("bow-loaded", "1");
+    const l = document.createElement("div");
+    l.className = "loader";
+    l.innerHTML = `<div class="name">KAIROS</div><div class="bar"><i></i></div><div class="pct">00%</div>`;
+    document.body.appendChild(l);
+    const name = l.querySelector(".name");
+    name.innerHTML = [..."KAIROS"].map((c, i) => `<span style="animation-delay:${0.4 + i * 0.05}s">${c}</span>`).join("");
+    const pct = l.querySelector(".pct");
+    const t0 = performance.now(), dur = 2200;
+    (function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      pct.textContent = String(Math.round(p * 100)).padStart(2, "0") + "%";
+      if (p < 1) requestAnimationFrame(step);
+      else setTimeout(() => { l.classList.add("done"); setTimeout(() => l.remove(), 800); }, 200);
+    })(t0);
+  }
+})();
+
+</script>
+</body>
+</html>

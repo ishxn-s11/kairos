@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KAIROS — Financial Affordability Agent</title>
+  <meta name="description" content="KAIROS — AI-powered financial affordability agent. Buy or Wait? — HackerRank Orchestrate September 2026.">
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png">
+  <link rel="apple-touch-icon" href="assets/img/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="KAIROS">
+  <meta property="og:title" content="KAIROS — Financial Affordability Agent">
+  <meta property="og:description" content="KAIROS — AI-powered financial affordability agent. Buy or Wait? — HackerRank Orchestrate September 2026.">
+  <meta property="og:url" content="https://kairos-buy-or-wait.example.com/">
+  <meta property="og:image" content="https://kairos-buy-or-wait.example.com/assets/img/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KAIROS — Financial Affordability Agent">
+  <meta name="twitter:description" content="KAIROS — AI-powered financial affordability agent. Buy or Wait? — HackerRank Orchestrate September 2026.">
+  <meta name="twitter:image" content="https://kairos-buy-or-wait.example.com/assets/img/og-image.png">
+<link rel="stylesheet" href="assets/css/main.css?v=40" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+</head>
+<body data-page="workflow">
+  <audio id="ambience" loop preload="none">
+    <source src="assets/audio/ambience.wav" type="audio/wav" />
+  </audio>
+
+  <header class="chrome">
+    <a class="brand" href="index.html">KAIROS<span class="dot">.</span></a>
+    <nav>
+      <a class="uline" href="about.html">ABOUT THE AGENT</a>
+      <a class="uline" href="index.html">DECISION INDEX</a>
+      <a class="uline" href="results.html">RESULTS</a>
+      <a class="uline active" href="workflow.html">WORKFLOW</a>
+      <a class="uline" href="test.html">TEST BENCH</a>
+    </nav>
+    <div class="right">
+      <div>
+        <a href="about.html#contact">CONTACT</a>
+        <span class="lang">EN</span>
+      </div>
+      <button id="soundToggle">SOUND — <span id="soundWord">OFF</span><span class="eq"><i></i><i></i><i></i></span></button>
+    </div>
+  </header>
+
+  <div class="sel-count rail tl2"><b>01</b><i>/</i>STAGE 07</div>
+
+  <main id="stage">
+    <div class="wf-wrap">
+      <canvas id="flowCanvas"></canvas>
+      <aside class="wf-panel">
+        <div class="wf-kicker" id="wfKicker">STAGE 01/07</div>
+        <h2 class="wf-title" id="wfTitle">INGEST &amp; EVIDENCE</h2>
+        <p class="wf-blurb" id="wfBlurb"></p>
+        <div class="wf-dots" id="wfDots"></div>
+        <div class="wf-controls">
+          <button id="wfPrev" class="hot">&lt; PREV</button>
+          <button id="wfNext" class="hot">NEXT &gt;</button>
+          <span class="wf-modes">
+            <button id="wfTour" class="hot on">TOUR</button>
+            <button id="wfFree" class="hot">FREE RUN</button>
+          </span>
+        </div>
+        <div class="wf-legend">
+          <span class="lg lg-floor"></span> MINIMUM FLOOR — NEVER CROSSED
+          <br><span class="lg lg-line"></span> SIMULATED BALANCE, DAY 0 → 90
+          <br><span class="lg lg-pulse"></span> DATA PULSE — STAGE HANDOFF
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="assets/js/data.js?v=10"></script>
+  <script src="assets/js/workflow.js?v=10"></script>
+  <script src="assets/js/common.js?v=22"></script>
+  <script src="assets/js/transitions.js?v=22"></script>
+  <script src="assets/js/workflow-page.js?v=10"></script>
+</body>
+</html>

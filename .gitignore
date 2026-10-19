@@ -1,0 +1,14 @@
+log.txt
+.env
+__pycache__/
+*.pyc
+.cache/
+cache/
+code/.cache/
+.kairos/
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+.pytest_cache/
+.codex-backup/
+.freebuff/
