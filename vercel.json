@@ -1,26 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "frontend": {
-      "root": "frontend-next",
-      "framework": "nextjs",
-      "installCommand": "npm ci",
-      "buildCommand": "npm run build"
-    },
-    "backend": {
-      "root": ".",
-      "framework": "flask",
-      "entrypoint": "app:app",
-      "functions": {
-        "app.py": {
-          "maxDuration": 60,
-          "includeFiles": "{code/**,dataset/**}"
-        }
-      }
+  "framework": null,
+  "installCommand": "npm --prefix frontend-next ci",
+  "buildCommand": "npm --prefix frontend-next run build",
+  "outputDirectory": "frontend-next/out",
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "includeFiles": "{code/**,dataset/**}",
+      "excludeFiles": "{frontend/**,frontend-next/**,code/tests/**,code/tools/**}"
     }
   },
   "rewrites": [
-    { "source": "/api/:path*", "destination": { "service": "backend" } },
-    { "source": "/:path*", "destination": { "service": "frontend" } }
+    { "source": "/api/:path*", "destination": "/api/index" },
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/:path*/", "destination": "/:path*/index.html" }
   ]
 }

@@ -212,9 +212,10 @@ The export contains the frontend only. Keep the Flask API running for live decis
 
 ## Vercel Hobby deployment
 
-The root `vercel.json` uses Vercel Services (beta, available on Hobby) to ship
-the Next.js frontend and Flask backend together. `/api/*` reaches Python;
-all other routes reach the frontend. Hosted pages call their own API origin.
+The root `vercel.json` publishes the Next.js static export and exposes the
+existing Flask backend through `api/index.py`, a Vercel Python Function.
+`/api/*` reaches Python; page and asset routes reach the static frontend.
+Hosted pages call their own API origin. This does not require beta Services.
 
 1. Link the repository root to your Vercel project using the Vercel CLI.
 2. Connect a Neon **Free** database through Vercel Marketplace. Its integration

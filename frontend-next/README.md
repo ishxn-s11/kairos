@@ -30,10 +30,9 @@ python -m http.server 8480 --bind 127.0.0.1 --directory out
 
 Notes:
 
-- Local builds use `output: "export"` + `trailingSlash: true`: every route is an
+- Builds use `output: "export"` + `trailingSlash: true`: every route is an
   `index.html` inside a folder, so static servers work without redirects.
-  On Vercel, its native Next.js adapter publishes the prerendered pages instead
-  of the standalone `out/` export.
+  Vercel publishes the same `out/` files and routes `/api/*` to Flask.
 - The two frontends share selected styles, artwork, data files, and logic.
   **After editing a shared file, mirror the change and run
   `python code/tools/check_parity.py` from the repository root.** It exits
