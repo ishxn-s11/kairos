@@ -1,17 +1,19 @@
-# Buy or Wait? — AI-Powered Financial Affordability Agent
+# Kairos — Financial Decision Engine
 
-HackerRank Orchestrate (September 2026) submission.
+Technical guide for the engine and Flask API in the open-source Kairos project.
+See the [project README](../README.md) for setup, accounts, and contribution instructions.
 
 For every row of `dataset/requests.csv` the agent decides whether the user can
-safely complete the requested financial commitment and emits the required
+safely complete the requested financial commitment and emits
 `output.csv` in the repository root.
 
 ## Local-first open-weight AI (KAIROS)
 
-KAIROS runs its evidence interpretation on **local, open-weight models** by
-default so sensitive financial data never leaves the machine. The deterministic
-finance engine is unchanged and still owns every number; the model only turns a
-message or a document image into candidate facts that the engine then verifies.
+Kairos uses its built-in evidence interpreter when `MODEL_PROVIDER` is unset.
+Optional **local, open-weight models** can interpret evidence through Ollama;
+cloud adapters send relevant evidence to the configured provider. The deterministic
+finance engine owns every number; the model turns a message or document image
+into candidate facts that the engine then verifies.
 
 The provider is chosen by `MODEL_PROVIDER` and injected through
 `buy_or_wait/providers.py` (`build_provider()`):
@@ -82,7 +84,7 @@ rank safe plans -> verify -> explain -> output.csv
   (Decimal), dated FX conversion, linked-event lifecycle folding, message/image
   evidence precedence, recurrence detection, 90-day cash-flow simulation,
   safe-to-pay bisection, earliest-full-date search, candidate generation,
-  independent verification, official plan ranking, explanation templates.
+  independent verification, plan ranking, explanation templates.
 - **LLM/VLM as evidence interpreter only** (`code/buy_or_wait/llm.py`): real
   providers are supported (OpenAI, Anthropic, Google/Gemini). When
   `MODEL_PROVIDER` + API key are set, unparseable messages are re-read by the
@@ -91,7 +93,7 @@ rank safe plans -> verify -> explain -> output.csv
   twice). The model never decides affordability — every fact it returns is
   verified by the deterministic engine.
 
-The **final submitted run** used the deterministic engine with no provider
+The **included baseline run** used the deterministic engine with no provider
 configured (see `code/evaluation/usage_report.md`), so all outputs are exactly
 reproducible. Message understanding is implemented by the deterministic
 multilingual interpreter in `code/buy_or_wait/messages.py`; the live model
@@ -154,10 +156,10 @@ broken fixtures into every tier to prove the guard can actually fail.
 > the rest of the file and manufactured phantom drift — that regression is
 > pinned by `test_scanner_keeps_regex_class_containing_a_quote`.
 
-## P1 — Freelancer mode, uncertainty scenarios, explainable reports
+## Freelancer mode, uncertainty scenarios, explainable reports
 
 Three additive capabilities on top of the same deterministic engine (the
-submitted `output.csv` is byte-identical; nothing below changes the core rules).
+saved `output.csv` is unchanged; these features use the same core rules).
 
 ### Freelancer mode (`buy_or_wait/freelancer.py`)
 Invoice-aware, variable-income cash-flow projection for irregular earners. Each
@@ -237,7 +239,7 @@ curl -s -X POST http://127.0.0.1:8000/api/decide \
 
 Guarantees, all covered by `code/tests/test_api.py`:
 
-- **No overrides reproduce the submitted row exactly** — `changed == []`,
+- **No overrides reproduce the baseline row exactly** — `changed == []`,
   `modified == []`, and the decision is byte-identical to `output.csv`.
 - **Deterministic on modified requests** — the same override always yields the
   same decision (the endpoint is `lru_cache`d; the engine is deterministic).
@@ -246,8 +248,11 @@ Guarantees, all covered by `code/tests/test_api.py`:
 - **Honest accounting** — every response reports that run's model calls, tokens,
   and cost (zero with no provider configured).
 
-CORS is open for local development (`KAIROS_API_CORS` to restrict), responses are
-`no-store`, and the server never writes to disk.
+CORS is open for local development (`KAIROS_API_CORS` to restrict), and responses
+are `no-store`. The server persists account, session, and activity records in
+`.kairos/accounts.sqlite3` by default; use `KAIROS_AUTH_DB` to choose another path.
+See the [account and API documentation](../README.md#configuration-and-data)
+in the project README for authentication details.
 
 Optional environment variables (never store keys in files):
 
