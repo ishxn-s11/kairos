@@ -1,0 +1,14 @@
+pillow>=10.0
+pytest>=8.0
+flask>=3.0
+# Structured-output validation for model extraction (schemas.py degrades to a
+# pure-Python check if this is not installed, so it is optional at runtime).
+pydantic>=2.0
+# Optional real-model providers (the engine runs without them):
+# openai>=1.40
+# anthropic>=0.40
+# google-genai>=1.0
+# NOTE: the local/open-weight path (MODEL_PROVIDER=ollama) needs NO Python SDK —
+# it talks to a running `ollama serve` over loopback REST using the standard
+# library. Just install Ollama and `ollama pull qwen3:4b` (+ a VL model for
+# images). MODEL_PROVIDER=mock runs fully offline with no model at all.
