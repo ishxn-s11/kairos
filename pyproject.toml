@@ -2,6 +2,12 @@
 name = "kairos-api"
 version = "1.0.0"
 requires-python = ">=3.12"
+dependencies = [
+  "Flask>=3.0,<4",
+  "Pillow>=10.0",
+  "pydantic>=2.0,<3",
+  "psycopg[binary]>=3.2,<4",
+]
 
 [tool.vercel]
 entrypoint = "app:app"
