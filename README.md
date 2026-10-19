@@ -27,7 +27,7 @@ Accounts provide registration, login, logout, and an activity history for authen
 ### Requirements
 
 - Python 3.10 or newer
-- Node.js 18.17 or newer, with npm
+- Node.js 22 or newer, with npm (Vercel uses Node.js 24)
 - Git
 
 ### 1. Clone the project
@@ -146,16 +146,18 @@ Decision endpoints support anonymous demo runs. Include `Authorization: Bearer <
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_KAIROS_API` | `http://127.0.0.1:8000` | Frontend API URL; set before starting or building Next.js |
+| `NEXT_PUBLIC_KAIROS_API` | Local: `http://127.0.0.1:8000`; hosted: same origin | Optional frontend API URL; set before starting or building Next.js |
 | `KAIROS_API_CORS` | `*` | Allowed frontend origin for API responses |
 | `KAIROS_AUTH_DB` | `.kairos/accounts.sqlite3` | Account database path, relative to the working directory when overridden with a relative path |
+| `DATABASE_URL` | Unset | Pooled PostgreSQL connection for hosted accounts; required on Vercel |
+| `DATABASE_URL_UNPOOLED` | Unset | Direct PostgreSQL connection for initializing the account schema |
 | `MODEL_PROVIDER` | Unset | Built-in evidence interpretation; optional `mock`, `ollama`, `openai`, `anthropic`, or `google` |
 | `TEXT_MODEL` / `VISION_MODEL` | Provider dependent | Optional evidence model names |
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Local model service URL |
 
 Set environment variables in your shell before launching the relevant process. The Python entry points do not automatically load `.env` files. See the [engine guide](code/README.md) for provider setup and the [frontend guide](frontend-next/README.md) for API URL overrides.
 
-Passwords use Werkzeug password hashes. The server stores session token hashes with a 30-day expiry; the frontend keeps its bearer token in browser local storage. Account records and activity are persisted in SQLite. The `.kairos/` directory is excluded from Git.
+Passwords use Werkzeug password hashes. The server stores session token hashes with a 30-day expiry; the frontend keeps its bearer token in browser local storage. Account records and activity are persisted in SQLite locally or PostgreSQL when `DATABASE_URL` is set. The `.kairos/` directory is excluded from Git. Hosted account endpoints return a clear error if PostgreSQL is not configured instead of using temporary serverless files.
 
 The development server binds to loopback by default. For an externally hosted installation, configure an explicit frontend origin, HTTPS, persistent database storage, and an appropriate production server.
 
@@ -180,7 +182,7 @@ code/
   main.py          Batch decision entry point
   serve_api.py     Flask API, accounts, and activity persistence
 dataset/           Example requests and supporting financial records
-frontend-next/     React 18 / Next.js 14 application
+frontend-next/     React 18 / Next.js 16 application
 frontend/          Earlier framework-free static frontend
 output.csv         Saved batch decisions
 LICENSE            MIT license
@@ -207,6 +209,22 @@ python -m http.server 8480 --bind 127.0.0.1 --directory out
 ```
 
 The export contains the frontend only. Keep the Flask API running for live decisions and accounts.
+
+## Vercel Hobby deployment
+
+The root `vercel.json` uses Vercel Services (beta, available on Hobby) to ship
+the Next.js frontend and Flask backend together. `/api/*` reaches Python;
+all other routes reach the frontend. Hosted pages call their own API origin.
+
+1. Link the repository root to your Vercel project using the Vercel CLI.
+2. Connect a Neon **Free** database through Vercel Marketplace. Its integration
+   supplies `DATABASE_URL` and `DATABASE_URL_UNPOOLED` to the project.
+3. Deploy from the repository root with `vercel deploy --prod`.
+
+The account tables are initialized through the direct database connection;
+normal account traffic uses the pooled connection. Local accounts are not
+automatically uploaded or migrated. Model API keys are optional, and no model
+provider is enabled by the deployment configuration.
 
 ## Contributing
 

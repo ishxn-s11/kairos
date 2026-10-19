@@ -1,7 +1,7 @@
 # Kairos — Next.js Frontend
 
 The primary interface for the open-source Kairos financial decision engine,
-built with **React 18 / Next.js 14 (App Router)**. It includes persistent light
+built with **React 18 / Next.js 16 (App Router)**. It includes persistent light
 and dark themes, a live decision test bench, and account activity connected to
 the Flask API. The frontend exports to static files; live decisions and accounts
 require the backend. See the [project README](../README.md) for full setup.
@@ -50,9 +50,10 @@ Notes:
   `?lv=1&id=&amt=&date=&partial=0`.
 - The light/dark theme toggle is available in both desktop and mobile navigation and persists in `localStorage`. If no preference has been saved, it follows the operating-system theme.
 - Account data is stored locally in `.kairos/accounts.sqlite3` by default. Override it with `KAIROS_AUTH_DB`; set `KAIROS_API_CORS` to a restricted origin outside local development.
-- Branding and social previews are set once in `app/layout.jsx` (icons,
-  OpenGraph, Twitter card). `metadataBase` is the placeholder
-  `kairos-buy-or-wait.example.com` — replace it with the real deploy URL.
+- Vercel deployments use same-origin `/api` routes and PostgreSQL account storage.
+  The `?api=` debugging override is accepted only on local development hosts.
+- Branding and social previews are set in `app/layout.jsx`. The base URL follows
+  `NEXT_PUBLIC_SITE_URL`, Vercel's production hostname, or the local dev URL.
 
 ## Architecture
 

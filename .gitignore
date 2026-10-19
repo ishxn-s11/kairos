@@ -1,6 +1,8 @@
 log.txt
 .env
 .venv/
+.vercel/
+.env.*
 __pycache__/
 *.pyc
 .cache/
@@ -13,3 +15,5 @@ frontend-next/out/
 .pytest_cache/
 .codex-backup/
 .freebuff/
+.agents/
+skills-lock.json

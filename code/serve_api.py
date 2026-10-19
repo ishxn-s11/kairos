@@ -19,7 +19,8 @@ Endpoints:
                          "allows_partial_payment": true}
                         → {decision, baseline, changed[], modified, request, usage}
 
-The server binds loopback by default and never writes to disk. Override the
+The server binds loopback by default. Accounts use SQLite locally or PostgreSQL
+when DATABASE_URL is configured. Override the
 allowed origin with KAIROS_API_CORS (defaults to "*" for local dev).
 """
 
@@ -56,6 +57,7 @@ from buy_or_wait.freelancer import (  # noqa: E402
 )
 from buy_or_wait.report import build_report, _scenario_dict  # noqa: E402
 from buy_or_wait.scenarios import ScenarioConfig, run_scenarios  # noqa: E402
+from account_database import AccountDatabaseUnavailable, account_database  # noqa: E402
 
 STORE = DataStore()
 REQUESTS = {row.request_id: row for row in STORE.requests}
@@ -65,51 +67,31 @@ app = Flask(__name__)
 app.config["AUTH_DB_PATH"] = os.environ.get(
     "KAIROS_AUTH_DB", str(REPO_ROOT / ".kairos" / "accounts.sqlite3")
 )
+app.config["AUTH_DATABASE_URL"] = os.environ.get("KAIROS_AUTH_DATABASE_URL") or os.environ.get("DATABASE_URL", "")
+app.config["AUTH_SCHEMA_DATABASE_URL"] = os.environ.get("DATABASE_URL_UNPOOLED", "")
+app.config["SERVERLESS"] = os.environ.get("VERCEL") == "1"
+app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
 
 _EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
-_INITIALIZED_DBS: set[str] = set()
 
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _db() -> sqlite3.Connection:
-    """Open the small local account database and ensure its schema exists."""
-    path = str(app.config["AUTH_DB_PATH"])
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(path)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    if path not in _INITIALIZED_DBS:
-        conn.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS users (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL,
-              email TEXT NOT NULL UNIQUE COLLATE NOCASE,
-              password_hash TEXT NOT NULL,
-              created_at TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS sessions (
-              token_hash TEXT PRIMARY KEY,
-              user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              created_at TEXT NOT NULL,
-              expires_at TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS actions (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              action TEXT NOT NULL,
-              details_json TEXT NOT NULL DEFAULT '{}',
-              created_at TEXT NOT NULL
-            );
-            CREATE INDEX IF NOT EXISTS actions_user_created ON actions(user_id, created_at DESC);
-            """
-        )
-        conn.commit()
-        _INITIALIZED_DBS.add(path)
-    return conn
+def _db():
+    return account_database(
+        str(app.config["AUTH_DB_PATH"]),
+        app.config["AUTH_DATABASE_URL"],
+        schema_url=app.config["AUTH_SCHEMA_DATABASE_URL"],
+        serverless=app.config["SERVERLESS"],
+    )
+
+
+@app.errorhandler(AccountDatabaseUnavailable)
+def account_database_error(exc):
+    app.logger.error("Account database unavailable")
+    return jsonify({"ok": False, "error": str(exc)}), 503
 
 
 def _public_user(row) -> dict:
@@ -158,7 +140,9 @@ def _record_action(user_id: int | None, action: str, details: dict | None = None
 
 @app.post("/api/auth/register")
 def register_endpoint():
-    body = request.get_json(silent=True) or {}
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({"ok": False, "error": "JSON body required"}), 400
     name = str(body.get("name") or "").strip()
     email = str(body.get("email") or "").strip().lower()
     password = str(body.get("password") or "")
@@ -171,10 +155,10 @@ def register_endpoint():
     try:
         with _db() as conn:
             cur = conn.execute(
-                "INSERT INTO users(name,email,password_hash,created_at) VALUES(?,?,?,?)",
+                "INSERT INTO users(name,email,password_hash,created_at) VALUES(?,?,?,?) RETURNING id",
                 (name, email, generate_password_hash(password), _now()),
             )
-            user_id = cur.lastrowid
+            user_id = cur.fetchone()["id"]
             row = conn.execute("SELECT * FROM users WHERE id=?", (user_id,)).fetchone()
     except sqlite3.IntegrityError:
         return jsonify({"ok": False, "error": "an account with this email already exists"}), 409
@@ -185,11 +169,13 @@ def register_endpoint():
 
 @app.post("/api/auth/login")
 def login_endpoint():
-    body = request.get_json(silent=True) or {}
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({"ok": False, "error": "JSON body required"}), 400
     email = str(body.get("email") or "").strip().lower()
     password = str(body.get("password") or "")
     with _db() as conn:
-        row = conn.execute("SELECT * FROM users WHERE email=? COLLATE NOCASE", (email,)).fetchone()
+        row = conn.execute("SELECT * FROM users WHERE LOWER(email)=LOWER(?)", (email,)).fetchone()
     if not row or not check_password_hash(row["password_hash"], password):
         return jsonify({"ok": False, "error": "invalid email or password"}), 401
     token = _new_session(row["id"])
@@ -203,10 +189,10 @@ def me_endpoint():
     if user is None:
         return jsonify({"ok": False, "error": "authentication required"}), 401
     with _db() as conn:
-        total = conn.execute("SELECT COUNT(*) FROM actions WHERE user_id=?", (user["id"],)).fetchone()[0]
+        total = conn.execute("SELECT COUNT(*) AS n FROM actions WHERE user_id=?", (user["id"],)).fetchone()["n"]
         decisions = conn.execute(
-            "SELECT COUNT(*) FROM actions WHERE user_id=? AND action='decision_run'", (user["id"],)
-        ).fetchone()[0]
+            "SELECT COUNT(*) AS n FROM actions WHERE user_id=? AND action='decision_run'", (user["id"],)
+        ).fetchone()["n"]
     return jsonify({"ok": True, "user": _public_user(user), "stats": {"total_actions": total, "decisions": decisions}})
 
 
@@ -545,7 +531,8 @@ def scenarios_endpoint():
 
 @app.after_request
 def add_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = os.environ.get("KAIROS_API_CORS", "*")
+    default_origin = request.host_url.rstrip("/") if app.config["SERVERLESS"] else "*"
+    response.headers["Access-Control-Allow-Origin"] = os.environ.get("KAIROS_API_CORS", default_origin)
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Cache-Control"] = "no-store"

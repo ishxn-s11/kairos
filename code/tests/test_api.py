@@ -29,12 +29,18 @@ def client():
 @pytest.fixture()
 def auth_client(tmp_path):
     previous = app.config.get("AUTH_DB_PATH")
+    previous_url = app.config.get("AUTH_DATABASE_URL")
+    previous_serverless = app.config.get("SERVERLESS")
     app.config["AUTH_DB_PATH"] = str(tmp_path / "accounts.sqlite3")
+    app.config["AUTH_DATABASE_URL"] = ""
+    app.config["SERVERLESS"] = False
     try:
         with app.test_client() as test_client:
             yield test_client
     finally:
         app.config["AUTH_DB_PATH"] = previous
+        app.config["AUTH_DATABASE_URL"] = previous_url
+        app.config["SERVERLESS"] = previous_serverless
 
 
 def submitted_row(request_id: str) -> dict:
@@ -164,3 +170,42 @@ def test_account_registration_login_and_activity(auth_client):
         "/api/auth/login", json={"email": "kai@example.com", "password": "safe-pass-123"}
     )
     assert login.status_code == 200
+
+
+def test_serverless_accounts_require_persistent_storage(auth_client):
+    app.config["SERVERLESS"] = True
+    response = auth_client.post(
+        "/api/auth/register",
+        json={"name": "Cloud Test", "email": "cloud@example.com", "password": "safe-pass-123"},
+    )
+    assert response.status_code == 503
+    assert "DATABASE_URL" in response.get_json()["error"]
+    # Demo decisions continue to work without account storage.
+    assert auth_client.post("/api/decide", json={"request_id": "request_26"}).status_code == 200
+
+
+def test_accounts_are_case_insensitive_and_activity_is_private(auth_client):
+    first = auth_client.post(
+        "/api/auth/register", json={"name": "First User", "email": "First@example.com", "password": "safe-pass-123"}
+    ).get_json()
+    duplicate = auth_client.post(
+        "/api/auth/register", json={"name": "Duplicate User", "email": "FIRST@example.com", "password": "safe-pass-123"}
+    )
+    assert duplicate.status_code == 409
+    first_headers = {"Authorization": f"Bearer {first['token']}"}
+    auth_client.post("/api/decide", json={"request_id": "request_26"}, headers=first_headers)
+    second = auth_client.post(
+        "/api/auth/register", json={"name": "Second User", "email": "second@example.com", "password": "safe-pass-456"}
+    ).get_json()
+    second_headers = {"Authorization": f"Bearer {second['token']}"}
+    assert auth_client.get("/api/auth/me", headers=second_headers).get_json()["stats"]["decisions"] == 0
+    activity = auth_client.get("/api/activity", headers=second_headers).get_json()["actions"]
+    assert all(item["action"] != "decision_run" for item in activity)
+    login = auth_client.post("/api/auth/login", json={"email": "FIRST@example.com", "password": "safe-pass-123"})
+    assert login.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint", ["register", "login"])
+def test_auth_rejects_non_object_json(auth_client, endpoint):
+    response = auth_client.post(f"/api/auth/{endpoint}", json=["invalid"])
+    assert response.status_code == 400

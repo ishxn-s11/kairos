@@ -3,10 +3,9 @@ import Chrome from "../components/Chrome";
 import Boot from "../components/Boot";
 
 export const metadata = {
-  /* Placeholder deploy origin — replace with the real production URL. */
-  metadataBase: new URL("https://kairos-buy-or-wait.example.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:8480")),
   title: "KAIROS — Financial Affordability Agent",
-  description: "KAIROS — AI-powered financial affordability agent (Buy or Wait? — HackerRank Orchestrate September 2026)",
+  description: "Kairos is an open-source financial decision engine that forecasts cash flow and compares safe ways to pay.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },
@@ -19,14 +18,14 @@ export const metadata = {
     type: "website",
     siteName: "KAIROS",
     title: "KAIROS — Financial Affordability Agent",
-    description: "KAIROS — AI-powered financial affordability agent (Buy or Wait? — HackerRank Orchestrate September 2026)",
+    description: "Open-source financial decisions, grounded in evidence and verified by simulation.",
     url: "/",
     images: [{ url: "/assets/img/og-image.png", width: 1200, height: 630, alt: "KAIROS — Buy or Wait?" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "KAIROS — Financial Affordability Agent",
-    description: "KAIROS — AI-powered financial affordability agent (Buy or Wait? — HackerRank Orchestrate September 2026)",
+    description: "Open-source financial decisions, grounded in evidence and verified by simulation.",
     images: ["/assets/img/og-image.png"],
   },
 };
