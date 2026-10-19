@@ -3,9 +3,10 @@
   "services": {
     "frontend": {
       "root": "frontend-next",
-      "framework": "nextjs",
+      "framework": null,
       "installCommand": "npm ci",
-      "buildCommand": "npm run build"
+      "buildCommand": "npm run build",
+      "outputDirectory": "out"
     },
     "backend": {
       "root": ".",
