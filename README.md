@@ -1,8 +1,4 @@
-# HackerRank Orchestrate
-
-Starter repository for the **HackerRank Orchestrate** 24-hour hackathon (September 2026).
-
-## Buy or Wait?
+## Kairos
 
 Build an AI-powered financial agent that decides whether a user can safely afford a requested expense.
 
