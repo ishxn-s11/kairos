@@ -10,8 +10,9 @@
    or ?api=http://host:port on the page URL. */
 (() => {
   const params = new URLSearchParams(location.search);
-  const DEFAULT_BASE = (typeof window !== "undefined" && window.KAIROS_API) || "http://127.0.0.1:8000";
-  const BASE = String(params.get("api") || DEFAULT_BASE).replace(/\/+$/, "");
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+  const DEFAULT_BASE = (typeof window !== "undefined" && window.KAIROS_API) || (local ? "http://127.0.0.1:8000" : "");
+  const BASE = String((local && params.get("api")) || DEFAULT_BASE).replace(/\/+$/, "");
 
   const START_CMD = "python3 code/serve_api.py";
 

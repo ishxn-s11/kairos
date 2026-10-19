@@ -4,7 +4,9 @@
    code/serve_api.py, which runs the REAL deterministic pipeline on demand so the
    bench can execute modified requests instead of replaying baseline.json.
 
-   Base URL: NEXT_PUBLIC_KAIROS_API, then ?api=http://host:port, then localhost.
+   Local development supports ?api=http://host:port. Hosted builds use the
+   configured API URL or their own origin, keeping account credentials local
+   to the trusted deployment.
    Everything is SSR-safe: nothing touches window/location at module scope. */
 
 import { authHeaders } from "./session";
@@ -22,10 +24,11 @@ const LABELS = {
 };
 
 export function apiBase() {
-  if (typeof window === "undefined") return "http://127.0.0.1:8000";
+  if (typeof window === "undefined") return process.env.NEXT_PUBLIC_KAIROS_API || "";
   const params = new URLSearchParams(window.location.search);
-  const fallback = process.env.NEXT_PUBLIC_KAIROS_API || window.KAIROS_API || "http://127.0.0.1:8000";
-  return String(params.get("api") || fallback).replace(/\/+$/, "");
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+  const fallback = process.env.NEXT_PUBLIC_KAIROS_API || window.KAIROS_API || (local ? "http://127.0.0.1:8000" : "");
+  return String((local && params.get("api")) || fallback).replace(/\/+$/, "");
 }
 
 /* health probe with a hard timeout so an absent server never hangs the page */

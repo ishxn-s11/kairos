@@ -250,7 +250,10 @@ Guarantees, all covered by `code/tests/test_api.py`:
 
 CORS is open for local development (`KAIROS_API_CORS` to restrict), and responses
 are `no-store`. The server persists account, session, and activity records in
-`.kairos/accounts.sqlite3` by default; use `KAIROS_AUTH_DB` to choose another path.
+`.kairos/accounts.sqlite3` locally; use `KAIROS_AUTH_DB` to choose another path.
+On Vercel, `DATABASE_URL` selects persistent PostgreSQL storage and
+`DATABASE_URL_UNPOOLED` initializes the tables through a direct connection.
+The hosted backend does not fall back to a temporary SQLite database.
 See the [account and API documentation](../README.md#configuration-and-data)
 in the project README for authentication details.
 

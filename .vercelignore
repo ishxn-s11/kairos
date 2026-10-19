@@ -1,0 +1,16 @@
+.git
+.vercel
+.venv
+.kairos
+.env*
+log.txt
+__pycache__
+.pytest_cache
+code/.cache
+frontend-next/node_modules
+frontend-next/.next
+frontend-next/out
+.codex-backup
+.freebuff
+.agents
+skills-lock.json
