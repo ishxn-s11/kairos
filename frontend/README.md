@@ -1,15 +1,12 @@
-# KAIROS — "Buy or Wait?" agent showcase (video-styled)
+# Kairos — Static Frontend
 
-The Buy-or-Wait financial affordability agent (**KAIROS**), presented with the
-visual language of the reference screen recording: intro loader, interactive
-word constellation, horizontal stage strip, hanging-lamp about pages,
-technical stage pages — plus a **Results** page showing the real run (real
-evidence images, real statistics, the 22-point validation, the live decision
-explorer), a **Workflow** page with the animated pipeline schematic, and a
-**Test Bench** for running and challenging the agent. English UI. No frameworks.
+The earlier framework-free interface for the open-source Kairos financial
+decision engine. It includes static results, evidence galleries, a workflow
+visualizer, and a test bench connected to the Flask API.
 
-A modern **React + Next.js port** lives in `../frontend-next/` (same routes,
-same effects, static export).
+The primary **React + Next.js app** lives in `../frontend-next/`. It includes
+the current homepage and About design, theme controls, and user accounts.
+See the [project README](../README.md) for setup and contribution instructions.
 
 ## Run
 
@@ -52,7 +49,7 @@ python3 code/serve_api.py      # http://127.0.0.1:8000 (loopback only)
 
 The panel probes `/api/health`, prefills the dataset values, and RUN LIVE posts
 the overrides to `/api/decide`; the answer is shown with a field-level delta
-against the submitted baseline. Without the server the panel says so and stays
+against the saved baseline. Without the server the panel says so and stays
 inert — the baseline bench above keeps working. Point the page at another host
 with `?api=http://host:port` or `window.KAIROS_API`.
 
@@ -103,7 +100,7 @@ frontend/
 | `about.html` | Hanging lamp hub: MISSION, INVARIANTS, EVIDENCE, ENGINE, MODELS, PIPELINE, RESULTS, CONTACT |
 | `results.html` | Real final run: 250 requests · 25,342 events · status/method bars · **live decision explorer (real output.csv rows with verbatim explanations)** · the 16 evidence images with extracted amounts (lightbox) · 22-point validation · artifacts |
 | `workflow.html` | Animated pipeline schematic: 7 stage boxes, traveling data pulses, live 90-day forecast line with the minimum floor, worst-day marker; guided tour + free-run modes |
-| `test.html` | Test bench: run any of the 250 requests through the engine baseline, diff against output.csv field by field, add custom test cases — plus a **live engine panel** that runs modified requests (new amount/date/partial flag) through the real Python pipeline (`code/serve_api.py`) and diffs the answer against the submitted baseline |
+| `test.html` | Test bench: run any of the 250 requests through the engine baseline, diff against output.csv field by field, add custom test cases — plus a **live engine panel** that runs modified requests (new amount/date/partial flag) through the real Python pipeline (`code/serve_api.py`) and diffs the answer against the saved baseline |
 | `work/stage-NN.html` | One pipeline stage each: pipeline diagram w/ story path, real evidence strip, decision console, density view, key-visual poster |
 
 ## Interactions & effects
